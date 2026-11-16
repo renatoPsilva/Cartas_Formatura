@@ -1,0 +1,16 @@
+# Arquivos locais e temporários
+.DS_Store
+Thumbs.db
+node_modules/
+.playwright-mcp/
+*.log
+*.zip
+
+# Imagens de referência que estavam na pasta antes do projeto.
+# Não são conteúdo do site e não devem ser publicadas.
+Luis_carlos.png
+selo1.png
+Selo2.png
+
+# Rascunhos locais do editor (não são usados pelo site)
+*.local

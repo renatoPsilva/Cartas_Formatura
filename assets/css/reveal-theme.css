@@ -1,0 +1,939 @@
+/* ==========================================================================
+   Tema do baralho — o cartão é uma folha, não um slide corporativo
+   ========================================================================== */
+
+.reveal-viewport {
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    95% 80% at 50% 2%,
+    transparent 45%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  );
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.reveal {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  box-sizing: border-box;
+}
+
+.reveal a {
+  color: inherit;
+}
+
+.reveal strong {
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Folha
+   -------------------------------------------------------------------------- */
+.slide {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 820px;
+  height: 1160px;
+}
+
+.card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgb(27 42 46 / 8%), 0 26px 70px -22px rgb(27 42 46 / 42%);
+  color: var(--ink);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(
+      rgb(27 42 46 / 3.4%) 0.55px,
+      transparent 0.55px
+    ),
+    repeating-linear-gradient(
+      91deg,
+      rgb(27 42 46 / 1.5%) 0 1px,
+      transparent 1px 6px
+    );
+  background-size: 4px 4px, 100% 100%;
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="dark"] .card::before {
+  opacity: 0.34;
+  background-image: radial-gradient(rgb(242 236 225 / 3.2%) 0.55px, transparent 0.55px),
+    repeating-linear-gradient(
+      91deg,
+      rgb(242 236 225 / 1.2%) 0 1px,
+      transparent 1px 6px
+    );
+  mix-blend-mode: screen;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 22%);
+}
+
+html[data-theme="dark"] .card::after {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 4%);
+}
+
+/* --------------------------------------------------------------------------
+   Capa
+   -------------------------------------------------------------------------- */
+.card--capa {
+  padding: 62px 68px 46px;
+}
+
+.card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.035em;
+}
+
+.card__top span:last-child {
+  text-align: right;
+}
+
+.capa__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 274px;
+  align-items: center;
+  gap: 42px;
+  flex: 1 1 auto;
+  padding: 26px 0 18px;
+}
+
+.capa__identity {
+  min-width: 0;
+  padding-top: 10px;
+}
+
+.capa__rule {
+  width: 58px;
+  height: 2px;
+  margin-bottom: 30px;
+  background: var(--accent);
+}
+
+.capa__para {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-style: normal;
+  font-weight: 320;
+  font-variation-settings: "opsz" 24, "SOFT" 60, "WONK" 0;
+}
+
+.capa__nome {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 74px;
+  font-weight: 330;
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+  color: var(--ink);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  font-variation-settings: "opsz" 96, "SOFT" 35, "WONK" 0;
+}
+
+.capa__disciplina {
+  max-width: 26ch;
+  margin-top: 22px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Retrato ou monograma */
+.retrato {
+  position: relative;
+  width: 274px;
+  height: 352px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--accent-wash);
+}
+
+.retrato img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(0.98);
+}
+
+.retrato .monograma {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px;
+  color: var(--accent);
+  text-align: center;
+}
+
+.retrato .monograma::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid currentColor;
+  opacity: 0.28;
+}
+
+.retrato .monograma::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -25%;
+  width: 150%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.18;
+  transform: rotate(-31deg);
+}
+
+.retrato .monograma__iniciais {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: 126px;
+  font-weight: 340;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+}
+
+.retrato .monograma__label {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+.retrato.has-image .monograma {
+  visibility: hidden;
+}
+
+/* Abertura pelo selo */
+.capa__open {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 6px 0 30px;
+}
+
+.seal-button {
+  position: relative;
+  display: block;
+  width: 172px;
+  height: 172px;
+  flex: 0 0 172px;
+  padding: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color var(--speed-base) var(--ease-out),
+    transform var(--speed-base) var(--ease-out);
+}
+
+.seal-button:hover {
+  background: var(--accent-wash);
+  transform: scale(1.015);
+}
+
+.seal-button:active {
+  transform: scale(0.985);
+}
+
+.seal-button svg {
+  width: 100%;
+  height: 100%;
+}
+
+.capa__open-copy {
+  max-width: 28ch;
+}
+
+.capa__open-copy p {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.15;
+  font-variation-settings: "opsz" 28, "SOFT" 50, "WONK" 0;
+}
+
+.capa__open-copy span {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.card__bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+/* --------------------------------------------------------------------------
+   Páginas internas
+   -------------------------------------------------------------------------- */
+.card--page {
+  padding: 104px 88px 84px;
+}
+
+.page-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.page-text h2 {
+  margin-bottom: 30px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 350;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  font-variation-settings: "opsz" 48, "SOFT" 35, "WONK" 0;
+}
+
+.page-text p {
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 330;
+  line-height: 1.62;
+  font-variation-settings: "opsz" 22, "SOFT" 50, "WONK" 0;
+  text-wrap: pretty;
+}
+
+.page-text p + p {
+  margin-top: 0.9em;
+}
+
+.page-text strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.page-text em {
+  font-style: italic;
+}
+
+.page-text--lead p:first-child {
+  color: var(--ink);
+}
+
+.page-text--long p {
+  font-size: 26px;
+}
+
+/* Foto */
+.card--foto {
+  padding: 88px 76px 70px;
+}
+
+.page-head {
+  margin-bottom: 34px;
+}
+
+.page-head h2 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 350;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-variation-settings: "opsz" 48, "SOFT" 35, "WONK" 0;
+}
+
+.photo-grid {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 22px;
+  min-height: 0;
+}
+
+.photo-grid--1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.photo-grid--2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.photo-grid--3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.2fr 0.8fr;
+}
+
+.photo-grid--3 .photo:first-child {
+  grid-row: span 2;
+}
+
+.photo-grid--many {
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.photo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+}
+
+.photo__frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--accent-wash);
+}
+
+.photo__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.photo__fallback span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 30px;
+}
+
+.photo figcaption {
+  flex: 0 0 auto;
+  padding-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.photo-grid--3 .photo:first-child .photo__frame {
+  min-height: 0;
+}
+
+/* Recados */
+.card--recados {
+  padding: 88px 76px 70px;
+}
+
+.recados-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 38px;
+  align-content: center;
+  flex: 1 1 auto;
+  list-style: none;
+  min-height: 0;
+}
+
+.recados-list li {
+  padding: 26px 0;
+  border-top: 1px solid var(--line);
+  break-inside: avoid;
+}
+
+.recados-list li:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.recados-list blockquote {
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 330;
+  line-height: 1.5;
+  font-variation-settings: "opsz" 20, "SOFT" 55, "WONK" 0;
+}
+
+.recados-list cite {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Citação */
+.card--citacao {
+  padding: 120px 96px 100px;
+  justify-content: center;
+}
+
+.card--citacao blockquote {
+  padding-left: 34px;
+  border-left: 2px solid var(--accent);
+}
+
+.card--citacao blockquote p {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 320;
+  line-height: 1.34;
+  letter-spacing: -0.015em;
+  font-variation-settings: "opsz" 42, "SOFT" 40, "WONK" 0;
+  text-wrap: pretty;
+}
+
+.card--citacao cite {
+  display: block;
+  margin-top: 32px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-style: normal;
+}
+
+/* Assinatura */
+.card--assinatura {
+  padding: 100px 88px 84px;
+  justify-content: center;
+  text-align: center;
+}
+
+.assinatura__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  padding-bottom: 20px;
+}
+
+.assinatura__content p {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 31px;
+  font-weight: 330;
+  line-height: 1.3;
+  font-variation-settings: "opsz" 30, "SOFT" 55, "WONK" 0;
+}
+
+.assinatura__content strong {
+  display: block;
+  max-width: 22ch;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 50px;
+  font-weight: 350;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 60, "SOFT" 35, "WONK" 0;
+}
+
+.assinatura__content .assinatura__ano {
+  margin-top: 22px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.assinatura__seal {
+  width: 104px;
+  margin-top: 40px;
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Controles do Reveal — fora do cartão
+   -------------------------------------------------------------------------- */
+.reveal .controls {
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.reveal .controls button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--card) 68%, transparent);
+  transition: background-color var(--speed-fast) var(--ease-out),
+    border-color var(--speed-fast) var(--ease-out), opacity var(--speed-fast)
+      var(--ease-out);
+}
+
+.reveal .controls button:hover {
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+.reveal .controls .controls-arrow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+.reveal .controls .controls-arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  background: transparent;
+  border-radius: 0;
+  transform: translate(-60%, -50%) rotate(45deg);
+  transition: transform var(--speed-fast) var(--ease-out);
+}
+
+.reveal .controls .controls-arrow::after {
+  display: none;
+}
+
+.reveal .controls .navigate-right .controls-arrow {
+  transform: none;
+}
+
+.reveal .controls .navigate-left .controls-arrow::before {
+  transform: translate(-40%, -50%) rotate(-135deg);
+}
+
+.reveal .controls .navigate-up,
+.reveal .controls .navigate-down {
+  display: none;
+}
+
+.reveal:not(.has-vertical-slides) .controls .navigate-left {
+  right: 66px;
+  bottom: 0;
+}
+
+.reveal:not(.has-vertical-slides) .controls .navigate-right {
+  right: 12px;
+  bottom: 0;
+}
+
+.reveal .controls .enabled {
+  opacity: 1;
+  visibility: visible;
+}
+
+.reveal .controls button:disabled {
+  opacity: 0.28;
+  visibility: visible;
+  cursor: default;
+}
+
+.reveal .controls button:disabled .controls-arrow::before {
+  opacity: 0.7;
+}
+
+.reveal .progress {
+  height: 2px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Ajustes de viewport — o cartão é escalado pelo Reveal; aumentamos o corpo
+   no celular para manter a leitura confortável (o modo leitura é o fallback).
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .card--capa {
+    padding: 48px 52px 36px;
+  }
+
+  .card__top {
+    font-size: 16px;
+  }
+
+  .capa__main {
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 30px;
+  }
+
+  .capa__nome {
+    font-size: 80px;
+  }
+
+  .capa__disciplina {
+    font-size: 25px;
+  }
+
+  .retrato {
+    width: 250px;
+    height: 322px;
+  }
+
+  .seal-button {
+    width: 158px;
+    height: 158px;
+    flex-basis: 158px;
+  }
+
+  .capa__open-copy p {
+    font-size: 28px;
+  }
+
+  .capa__open-copy span {
+    font-size: 16px;
+  }
+
+  .card__bottom {
+    font-size: 15px;
+  }
+
+  .card--page {
+    padding: 82px 66px 70px;
+  }
+
+  .page-text h2 {
+    margin-bottom: 26px;
+    font-size: 48px;
+  }
+
+  .page-text p {
+    font-size: 38px;
+    line-height: 1.55;
+  }
+
+  .page-text--long p {
+    font-size: 34px;
+  }
+
+  .card--foto,
+  .card--recados {
+    padding: 74px 58px 58px;
+  }
+
+  .page-head h2 {
+    font-size: 46px;
+  }
+
+  .photo figcaption {
+    font-size: 26px;
+  }
+
+  .photo__fallback {
+    font-size: 24px;
+  }
+
+  .recados-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+    align-content: center;
+  }
+
+  .recados-list li {
+    padding: 18px 0;
+  }
+
+  .recados-list li:nth-child(2) {
+    border-top: 1px solid var(--line);
+  }
+
+  .recados-list blockquote {
+    font-size: 33px;
+    line-height: 1.45;
+  }
+
+  .recados-list cite {
+    margin-top: 8px;
+    font-size: 19px;
+  }
+
+  .card--citacao {
+    padding: 110px 70px 90px;
+  }
+
+  .card--citacao blockquote p {
+    font-size: 50px;
+  }
+
+  .card--citacao cite {
+    font-size: 23px;
+  }
+
+  .assinatura__content p {
+    font-size: 38px;
+  }
+
+  .assinatura__content strong {
+    font-size: 58px;
+  }
+
+  .assinatura__content .assinatura__ano {
+    font-size: 20px;
+  }
+
+  .assinatura__seal {
+    width: 118px;
+  }
+
+  .reveal .controls button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .reveal .controls .navigate-left {
+    right: 56px;
+  }
+
+  .reveal .controls .navigate-right {
+    right: 6px;
+  }
+}
+
+/* Em celulares muito estreitos, o retrato vira uma faixa menor para o nome
+   respirar; o monograma continua legível. */
+@media (max-width: 430px) {
+  .capa__main {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 30px;
+  }
+
+  .retrato {
+    width: 180px;
+    height: 220px;
+    order: -1;
+  }
+
+  .retrato .monograma__iniciais {
+    font-size: 90px;
+  }
+
+  .capa__nome {
+    font-size: 74px;
+  }
+
+  .capa__open {
+    gap: 18px;
+  }
+
+  .seal-button {
+    width: 142px;
+    height: 142px;
+    flex-basis: 142px;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 1000px) and (orientation: portrait) {
+  .reveal:not(.has-vertical-slides) .controls .navigate-left {
+    right: 0;
+    bottom: 54px;
+  }
+
+  .reveal:not(.has-vertical-slides) .controls .navigate-right {
+    right: 0;
+    bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seal-button:hover {
+    transform: none;
+  }
+
+  .reveal .fade .slides section,
+  .reveal .slides section {
+    transition: none !important;
+  }
+
+  .reveal .progress span {
+    transition: none;
+  }
+}

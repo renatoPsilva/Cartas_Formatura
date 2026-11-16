@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Cartões de Gratidão — tokens
+   Fontes self-hosted (OFL), paleta e tipografia definidas no PLANO.md.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-latin.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-latin-ext.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../fonts/ibmplex-latin.woff2") format("woff2");
+  font-weight: 100 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../fonts/ibmplex-latin-ext.woff2") format("woff2");
+  font-weight: 100 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Cor */
+  --bg: #e9e4da;
+  --card: #faf7f0;
+  --ink: #1b2a2e;
+  --muted: #67635b;
+  --line: #d8d0c3;
+  --seal: #a33b32;
+
+  --bg-deep: #dfd8cc;
+  --card-raised: #fffdf8;
+  --ink-soft: #405055;
+  --seal-soft: #f0e3df;
+
+  /* Acento padrão; cada professor sobrescreve com data-acento. */
+  --accent: var(--seal);
+  --accent-ink: #7f2c25;
+  --accent-wash: #f2e4e0;
+
+  /* Tipografia */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-ui: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+
+  /* Medidas */
+  --measure: 66ch;
+  --radius: 2px;
+  --shadow-card: 0 1px 1px rgb(27 42 46 / 5%), 0 18px 48px -22px rgb(27 42 46 / 34%),
+    0 3px 10px rgb(27 42 46 / 6%);
+  --shadow-raised: 0 1px 1px rgb(27 42 46 / 5%), 0 24px 70px -26px rgb(27 42 46 / 42%);
+
+  /* Movimento */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --speed-fast: 140ms;
+  --speed-base: 240ms;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0e1618;
+  --card: #162225;
+  --ink: #f2ece1;
+  --muted: #a8a196;
+  --line: #2e3d40;
+  --seal: #c46a5e;
+
+  --bg-deep: #0a1113;
+  --card-raised: #1b292c;
+  --ink-soft: #d4cec4;
+  --seal-soft: #3a2422;
+
+  --accent: var(--seal);
+  --accent-ink: #e5a198;
+  --accent-wash: #3a2422;
+
+  --shadow-card: 0 1px 1px rgb(0 0 0 / 30%), 0 22px 60px -20px rgb(0 0 0 / 70%);
+  --shadow-raised: 0 1px 1px rgb(0 0 0 / 35%), 0 30px 80px -24px rgb(0 0 0 / 80%);
+}
+
+/* Acentos por professor — claro */
+[data-acento="seal"] {
+  --accent: #a33b32;
+  --accent-ink: #7f2c25;
+  --accent-wash: #f2e4e0;
+}
+[data-acento="azul"] {
+  --accent: #2f5d7a;
+  --accent-ink: #244b63;
+  --accent-wash: #e2eaf0;
+}
+[data-acento="verde"] {
+  --accent: #4e6b52;
+  --accent-ink: #3d5641;
+  --accent-wash: #e4eae2;
+}
+[data-acento="ameixa"] {
+  --accent: #7a4e5a;
+  --accent-ink: #623f49;
+  --accent-wash: #eee2e5;
+}
+[data-acento="ocre"] {
+  --accent: #b07a3c;
+  --accent-ink: #8a5d29;
+  --accent-wash: #f2e7d8;
+}
+
+/* Acentos por professor — escuro */
+html[data-theme="dark"] [data-acento="seal"] {
+  --accent: #c46a5e;
+  --accent-ink: #e5a198;
+  --accent-wash: #3a2422;
+}
+html[data-theme="dark"] [data-acento="azul"] {
+  --accent: #7fa6c0;
+  --accent-ink: #a9c6d9;
+  --accent-wash: #1d2d36;
+}
+html[data-theme="dark"] [data-acento="verde"] {
+  --accent: #93b394;
+  --accent-ink: #b5cdb6;
+  --accent-wash: #223026;
+}
+html[data-theme="dark"] [data-acento="ameixa"] {
+  --accent: #c48c9c;
+  --accent-ink: #d9aeb9;
+  --accent-wash: #32242a;
+}
+html[data-theme="dark"] [data-acento="ocre"] {
+  --accent: #d8a75e;
+  --accent-ink: #e5c28d;
+  --accent-wash: #342a1d;
+}

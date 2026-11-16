@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Editor não listado dos Cartões de Gratidão. Uso interno da turma.">
+    <title>Editor — Cartões de Gratidão</title>
+    <link rel="icon" href="../assets/img/marca/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="../assets/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../assets/fonts/ibmplex-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <script src="../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../assets/css/tokens.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/reveal-theme.css">
+    <link rel="stylesheet" href="../assets/css/editor.css">
+  </head>
+  <body class="editor-body">
+    <a class="skip-link" href="#editor-form">Pular para o formulário</a>
+
+    <header class="editor-header">
+      <a class="editor-brand" href="../" aria-label="Abrir o site dos Cartões de Gratidão">
+        <span class="editor-brand__seal" aria-hidden="true">
+          <svg viewBox="0 0 40 40" focusable="false">
+            <circle cx="20" cy="20" r="18.4" fill="none" stroke="currentColor" stroke-width="1.2"></circle>
+            <circle cx="20" cy="20" r="15.2" fill="none" stroke="currentColor" stroke-width="0.6" stroke-dasharray="1 3"></circle>
+            <text x="20" y="25.2" text-anchor="middle" font-size="13" font-weight="500" fill="currentColor">CG</text>
+          </svg>
+        </span>
+        <span class="editor-brand__text">
+          <strong>Cartões de Gratidão</strong>
+          <small>Editor não listado · uso interno</small>
+        </span>
+      </a>
+
+      <div class="editor-actions">
+        <span class="editor-status" data-status role="status" aria-live="polite">Rascunho local neste navegador</span>
+        <button class="btn btn--quiet" type="button" data-import-trigger>Importar</button>
+        <button class="btn btn--quiet" type="button" data-download-js>Baixar dados.js</button>
+        <button class="btn btn--primary" type="button" data-download-zip>Baixar ZIP</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M20.4 15.1A8.4 8.4 0 0 1 8.9 3.6a8.5 8.5 0 1 0 11.5 11.5Z"></path>
+          </svg>
+        </button>
+        <input type="file" accept=".js,.json,application/json,text/javascript" hidden data-import-input>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <aside class="editor-sidebar" aria-labelledby="professores-titulo">
+        <div class="sidebar-heading">
+          <h1 id="professores-titulo">Cartões</h1>
+          <span class="count-badge" data-prof-count>0</span>
+        </div>
+        <p class="sidebar-hint">Escolha um cartão para editar. O site público não exibe esta lista.</p>
+        <ul class="prof-list" data-prof-list></ul>
+        <button class="btn btn--add" type="button" data-add-professor>Adicionar professor</button>
+
+        <div class="sidebar-publish">
+          <h2>Como publicar</h2>
+          <ol>
+            <li>Baixe o ZIP.</li>
+            <li>Extraia na raiz do repositório e substitua os arquivos.</li>
+            <li>Faça commit e push.</li>
+          </ol>
+          <p>O editor não envia nada para um servidor. As imagens ficam no seu navegador até você exportar. Depois da formatura, remova a pasta <code>editor/</code> do repositório.</p>
+        </div>
+      </aside>
+
+      <section class="editor-form" id="editor-form" aria-label="Formulário do cartão">
+        <div class="editor-empty" data-empty hidden>
+          <h2>Nenhum cartão selecionado</h2>
+          <p>Escolha um cartão na lista ao lado ou crie um novo professor.</p>
+        </div>
+        <div data-form-wrap hidden></div>
+      </section>
+
+      <aside class="editor-preview" aria-labelledby="previa-titulo">
+        <div class="preview-heading">
+          <div>
+            <h2 id="previa-titulo">Prévia</h2>
+            <p>Mesmos tokens e tipografia do site.</p>
+          </div>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20.4 15.1A8.4 8.4 0 0 1 8.9 3.6a8.5 8.5 0 1 0 11.5 11.5Z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="preview-stage" data-preview aria-label="Prévia do cartão"></div>
+      </aside>
+    </main>
+
+    <noscript>
+      <div class="noscript">
+        <p>O editor precisa de JavaScript para funcionar. Ative o JavaScript neste navegador.</p>
+      </div>
+    </noscript>
+
+    <script src="../dados.js"></script>
+    <script src="../vendor/fflate/fflate.js"></script>
+    <script src="../assets/js/editor.js"></script>
+  </body>
+</html>
