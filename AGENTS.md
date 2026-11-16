@@ -14,7 +14,7 @@ Este repositório é uma base estática para os **Cartões de Gratidão** da tur
 - Sem build step. O site é servido diretamente pelo GitHub Pages.
 - Sem CDN em runtime. Reveal.js, fflate e fontes são vendorizados no repositório.
 - Sem backend, banco, login ou token.
-- Caminhos relativos em todos os arquivos. O site vive em `/cartas-formatura/`.
+- Caminhos relativos em todos os arquivos. O site vive em `/cartas-formatura/`. A exceção é `404.html`, que usa `<base href="/cartas-formatura/">` porque o GitHub Pages serve o 404 mantendo a URL profunda original.
 - `.nojekyll` na raiz.
 - Site em pt-BR; `lang="pt-BR"` em todas as páginas.
 - Todas as páginas com `noindex, nofollow`. `robots.txt` com `Disallow: /`.

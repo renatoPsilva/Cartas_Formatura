@@ -6,17 +6,11 @@
     <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Página não encontrada — Cartões de Gratidão.">
     <title>Página não encontrada — Cartões de Gratidão</title>
-    <!-- No GitHub Pages, o 404 é servido mantendo a URL profunda original.
-         O <base> garante que os assets resolvam a partir da raiz do projeto
-         também nesse caso; localmente, mantém a raiz do servidor. -->
-    <script>
-      (function () {
-        var projeto = "/cartas-formatura/";
-        var base =
-          window.location.pathname.indexOf(projeto) === 0 ? projeto : "/";
-        document.write('<base href="' + base + '">');
-      })();
-    </script>
+    <!-- O GitHub Pages serve o 404 mantendo a URL profunda original. Um <base>
+         estático garante que CSS, fontes e scripts resolvam a partir da raiz
+         do project site. Para testar localmente, sirva o projeto em
+         /cartas-formatura/ (ex.: um symlink no servidor). -->
+    <base href="/cartas-formatura/">
     <link rel="icon" href="assets/img/marca/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="assets/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/ibmplex-latin.woff2" as="font" type="font/woff2" crossorigin>
