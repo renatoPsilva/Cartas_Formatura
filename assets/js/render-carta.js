@@ -679,7 +679,6 @@
 
     evento.preventDefault();
     estadoInterno.trocando = true;
-    app.classList.add("is-trocando-pagina", "transicao-pagina");
     atual.classList.add("slide-saindo");
 
     window.setTimeout(function () {
@@ -689,9 +688,7 @@
       window.setTimeout(function () {
         estadoInterno.programatica = false;
       }, 0);
-      app.classList.remove("is-trocando-pagina");
       window.setTimeout(function () {
-        app.classList.remove("transicao-pagina");
         estadoInterno.trocando = false;
       }, DURACAO_TROCA_ENTRADA);
     }, DURACAO_TROCA_SAIDA + DURACAO_TROCA_PAUSA);

@@ -838,15 +838,6 @@ html[data-theme="dark"] .card::after {
   display: block !important;
 }
 
-.app[data-carta="aberta"].transicao-pagina .deck-status {
-  transition-delay: 0s;
-}
-
-.app.is-trocando-pagina .deck-status {
-  opacity: 0;
-  transition: opacity 260ms var(--ease-out);
-}
-
 /* --------------------------------------------------------------------------
    Ajustes de viewport — o cartão mantém 1160 × 820; aumentamos a tipografia
    no celular para compensar a escala do Reveal. O modo leitura é o fallback.
@@ -1159,9 +1150,5 @@ html[data-theme="dark"] .card::after {
   .app[data-carta="aberta"] .reveal .slides > section .card > *:not(.carta-nav),
   .reveal .slides > section.slide-saindo .card > *:not(.carta-nav) {
     transition: none !important;
-  }
-
-  .app.is-trocando-pagina .deck-status {
-    transition: none;
   }
 }

@@ -82,7 +82,7 @@ Este repositório é uma base estática para os **Cartões de Gratidão** da tur
 - Chrome headless via `puppeteer-core` em 390 × 844 e 1440 × 900.
 - Raiz, piloto, pelo menos um placeholder, editor e 404.
 - Envelope fechado, quadro do meio da abertura (folha saindo por trás do carimbo) e página 1 aberta, em claro/escuro.
-- A transição entre páginas é fade-out, respiro curto e fade-in; o conteúdo antigo deve sumir antes do novo entrar, mas a folha do cartão não pode piscar nem desaparecer. O contador acompanha o mesmo compasso.
+- A transição entre páginas é fade-out, respiro curto e fade-in; o conteúdo antigo deve sumir antes do novo entrar, mas a folha do cartão não pode piscar nem desaparecer. O contador atualiza o número sem fazer fade.
 - Contador e setas ocultos fechado; visíveis e corretos depois. Setas `disabled` na primeira e na última página; sem círculos e sem barra de progresso.
 - Claro/escuro + persistência.
 - Teclado: só o carimbo tabulável no deck fechado, Enter/Space para abrir, foco na página 1, setas, Home/End, Esc no modo leitura.

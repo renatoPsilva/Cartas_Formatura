@@ -154,7 +154,7 @@ Regras:
 - `#/2` em diante abre direto na página pedida, com o envelope considerado aberto. Exemplo: `#/2` mostra a primeira página interna.
 - Voltar para `#/1` depois de aberta mostra a página 1 aberta, não o envelope.
 - O contador fica fora do cartão e só aparece depois da abertura. As setas ficam dentro do cartão, no canto inferior direito; a indisponível fica desabilitada.
-- A troca de páginas é sequencial: 260 ms de fade-out, 40 ms de respiro e 260 ms de fade-in apenas no conteúdo. A folha do cartão fica parada; o contador acompanha, e o conteúdo antigo some antes do novo entrar.
+- A troca de páginas é sequencial: 260 ms de fade-out, 40 ms de respiro e 260 ms de fade-in apenas no conteúdo. A folha do cartão fica parada; o contador atualiza o número sem fade, e o conteúdo antigo some antes do novo entrar.
 - A numeração nova não preserva hashes antigos (`#/2` antigo apontava para outra página). O site é novo; compartilhe os links atuais.
 
 ## Como adicionar um novo professor

@@ -152,7 +152,7 @@ palco 1160 × 820
 - Teclado, swipe e as setas internas ficam desabilitados enquanto a carta está fechada. O carimbo abre por Enter/Espaço.
 - As setas ficam **dentro do cartão**, em um par no canto inferior direito, sem círculos. A indisponível fica `disabled` e esmaecida.
 - O contador “1 / 5” fica **fora** do cartão, no canto inferior esquerdo, e só aparece depois da abertura. O envelope não conta como página; no piloto o total é 5.
-- A troca de páginas é sequencial: o conteúdo atual faz fade-out em 260 ms, fica 40 ms de respiro e o novo conteúdo entra em 260 ms. A folha do cartão, a borda e a sombra ficam paradas; só o conteúdo faz o fade. O contador acompanha o mesmo compasso, e o conteúdo antigo some antes do novo aparecer.
+- A troca de páginas é sequencial: o conteúdo atual faz fade-out em 260 ms, fica 40 ms de respiro e o novo conteúdo entra em 260 ms. A folha do cartão, a borda e a sombra ficam paradas; só o conteúdo faz o fade. O contador atualiza o número sem fade, e o conteúdo antigo some antes do novo aparecer.
 - **Ler a carta inteira** abre um `<dialog>` com todas as páginas em um artigo linear, rolável, fechável por Esc ou botão.
 - Enquanto o diálogo está aberto, teclado, swipe e navegação por hash do Reveal são suspensos. A API `window.Cartao` expõe `pausarNavegacao()` e `retomarNavegacao()` para o modo de leitura, inclusive quando ele abre no meio da abertura.
 - Toggle claro/escuro fixo, com `aria-pressed`, ícone sol/lua e persistência em `localStorage` (`cg-theme`). Na primeira visita, segue `prefers-color-scheme`. O tema é aplicado antes do CSS para evitar flash.
