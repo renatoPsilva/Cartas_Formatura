@@ -50,10 +50,22 @@ As fontes foram baixadas em subset latino/latin-ext do Google Fonts e são servi
 - **Origem:** <https://github.com/anthropics/skills/tree/main/skills/frontend-design>.
 - **Autoria:** Anthropic.
 
+## Skill unslop-ui
+
+- **Uso:** limpeza sob demanda de copy, decoração e gráficos de interface; invocação explícita.
+- **Versão:** commit `cd89116` (18/11/2026).
+- **Licença:** MIT.
+- **Arquivos:** `.opencode/skills/unslop-ui/`.
+- **Licença incluída:** `.opencode/skills/unslop-ui/LICENSE`.
+- **Origem:** <https://github.com/felipebasurto/unslop-ui>.
+- **Autoria:** Felipe Basurto.
+
 ## Conteúdo e imagens
 
 - Textos e nomes de professores são **placeholders** criados para esta base.
 - As ilustrações abstratas em `assets/img/professores/professora-exemplo/` são SVGs originais deste projeto, sem fotos de terceiros.
-- O selo e o favicon são desenhos originais em SVG/CSS.
+- O selo tipográfico e o favicon são desenhos originais em SVG/CSS.
+- O carimbo de cera em `assets/img/marca/selo-cera.webp` / `.png` foi fornecido pela turma e recortado para uso no envelope; o original `carimbo.png` é uma fonte local e não é publicado.
+- Os três selos em `assets/img/marca/selos/` foram fornecidos pela turma e recortados para uso no envelope: `selo-01` (selo circular), `selo-02` (marca Alpha EdTech) e `selo-03` (marca Cummins). Os originais na raiz são fontes locais e não são publicados. As marcas pertencem aos seus titulares; confirmar a autorização de uso antes de publicar.
 - A imagem OG foi gerada a partir de HTML/CSS usando as fontes acima.
 - Nenhuma imagem de banco de imagens, Google Drive ou serviço externo é usada no site publicado.

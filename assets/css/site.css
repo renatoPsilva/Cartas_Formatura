@@ -102,18 +102,18 @@ html[data-theme="dark"] .paper-grain::after {
   justify-content: space-between;
   gap: 16px;
   width: 100%;
-  max-width: 1240px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 22px clamp(20px, 4vw, 52px);
 }
 
 .home {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.72fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   align-items: center;
-  gap: clamp(40px, 8vw, 112px);
+  gap: clamp(32px, 4vw, 56px);
   width: 100%;
-  max-width: 1240px;
+  max-width: 1320px;
   margin: auto;
   padding: clamp(32px, 5vw, 64px) clamp(20px, 4vw, 52px);
 }
@@ -175,8 +175,8 @@ html[data-theme="dark"] .paper-grain::after {
 
 .home-card {
   justify-self: center;
-  width: min(100%, 430px);
-  perspective: 1200px;
+  width: min(100%, 560px);
+  perspective: 1400px;
 }
 
 .home-card__stack {
@@ -208,8 +208,8 @@ html[data-theme="dark"] .paper-grain::after {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  aspect-ratio: 820 / 1160;
-  padding: clamp(26px, 4vw, 40px);
+  aspect-ratio: 1160 / 820;
+  padding: clamp(22px, 3.4vw, 34px);
   border: 1px solid var(--line);
   background: var(--card);
   box-shadow: var(--shadow-raised);
@@ -229,15 +229,17 @@ html[data-theme="dark"] .paper-grain::after {
 }
 
 .home-card__seal {
-  display: grid;
-  place-items: center;
+  position: relative;
   flex: 1;
-  padding: 8% 4%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .home-card__seal svg {
-  width: min(78%, 270px);
-  height: auto;
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
 }
 
 .home-card__foot {
@@ -271,7 +273,7 @@ html[data-theme="dark"] .paper-grain::after {
   justify-content: space-between;
   gap: 16px;
   width: 100%;
-  max-width: 1240px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 24px clamp(20px, 4vw, 52px) 28px;
   color: var(--muted);
@@ -293,9 +295,11 @@ html[data-theme="dark"] .paper-grain::after {
 }
 
 .deck-main {
+  box-sizing: border-box;
   width: 100%;
   height: 100vh;
   height: 100dvh;
+  padding: 58px clamp(10px, 2.6vw, 46px) 54px;
 }
 
 .deck-toolbar {
@@ -373,6 +377,19 @@ html[data-theme="dark"] .paper-grain::after {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out),
+    visibility 0s linear 220ms;
+}
+
+.app[data-carta="aberta"] .deck-status {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 220ms var(--ease-out) 120ms,
+    transform 220ms var(--ease-out) 120ms, visibility 0s linear 0s;
 }
 
 .deck-status [data-page-current] {
@@ -845,7 +862,7 @@ html[data-theme="dark"] .paper-grain::after {
   }
 
   .home-card {
-    width: min(100%, 380px);
+    width: min(100%, 520px);
     justify-self: start;
   }
 }
@@ -870,7 +887,7 @@ html[data-theme="dark"] .paper-grain::after {
   }
 
   .home-card {
-    width: min(100%, 332px);
+    width: min(100%, 420px);
   }
 
   .home-footer {
@@ -896,6 +913,10 @@ html[data-theme="dark"] .paper-grain::after {
   .deck-status {
     bottom: 12px;
     left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .app[data-carta="aberta"] .deck-status {
     transform: translateX(-50%);
   }
 
@@ -928,18 +949,13 @@ html[data-theme="dark"] .paper-grain::after {
   }
 
   .home-card {
-    width: min(100%, 360px);
+    width: min(100%, 470px);
   }
 }
 
-/* Em tablets em retrato o cartão ocupa quase toda a largura; reservamos
-   uma faixa para o chrome (setas e indicador) ficar fora da folha. */
-@media (min-width: 500px) and (max-width: 1000px) and (orientation: portrait) {
+@media (max-width: 600px) {
   .deck-main {
-    box-sizing: border-box;
-    height: 100vh;
-    height: 100dvh;
-    padding: 58px 56px;
+    padding: 58px 6px 48px;
   }
 }
 
@@ -947,6 +963,11 @@ html[data-theme="dark"] .paper-grain::after {
   .app[data-estado="pronto"] .reveal,
   .reading-dialog[open] {
     animation: none;
+  }
+
+  .deck-status,
+  .app[data-carta="aberta"] .deck-status {
+    transition: none;
   }
 
   .deck-loading__dot {

@@ -69,6 +69,14 @@
   --accent: var(--seal);
   --accent-ink: #7f2c25;
   --accent-wash: #f2e4e0;
+  --accent-envelope: #c46a5e;
+
+  /* Envelope — o objeto escuro que fecha a página 1. */
+  --envelope: #1b2a2e;
+  --envelope-deep: #131f21;
+  --envelope-ink: #f2ece1;
+  --envelope-muted: #c9c1b4;
+  --envelope-line: rgb(242 236 225 / 18%);
 
   /* Tipografia */
   --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
@@ -105,6 +113,13 @@ html[data-theme="dark"] {
   --accent: var(--seal);
   --accent-ink: #e5a198;
   --accent-wash: #3a2422;
+  --accent-envelope: #c46a5e;
+
+  --envelope: #223437;
+  --envelope-deep: #1a292c;
+  --envelope-ink: #f2ece1;
+  --envelope-muted: #c9c1b4;
+  --envelope-line: rgb(242 236 225 / 22%);
 
   --shadow-card: 0 1px 1px rgb(0 0 0 / 30%), 0 22px 60px -20px rgb(0 0 0 / 70%);
   --shadow-raised: 0 1px 1px rgb(0 0 0 / 35%), 0 30px 80px -24px rgb(0 0 0 / 80%);
@@ -115,26 +130,31 @@ html[data-theme="dark"] {
   --accent: #a33b32;
   --accent-ink: #7f2c25;
   --accent-wash: #f2e4e0;
+  --accent-envelope: #c46a5e;
 }
 [data-acento="azul"] {
   --accent: #2f5d7a;
   --accent-ink: #244b63;
   --accent-wash: #e2eaf0;
+  --accent-envelope: #7fa6c0;
 }
 [data-acento="verde"] {
   --accent: #4e6b52;
   --accent-ink: #3d5641;
   --accent-wash: #e4eae2;
+  --accent-envelope: #93b394;
 }
 [data-acento="ameixa"] {
   --accent: #7a4e5a;
   --accent-ink: #623f49;
   --accent-wash: #eee2e5;
+  --accent-envelope: #c48c9c;
 }
 [data-acento="ocre"] {
   --accent: #b07a3c;
   --accent-ink: #8a5d29;
   --accent-wash: #f2e7d8;
+  --accent-envelope: #d8a75e;
 }
 
 /* Acentos por professor — escuro */

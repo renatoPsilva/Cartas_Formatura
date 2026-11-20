@@ -4,6 +4,8 @@ Base de um site estático em português para a turma presentear os professores d
 
 O conteúdo deste repositório é **de exemplo**. Nomes, disciplinas, textos e imagens são placeholders e devem ser substituídos pela turma.
 
+Cada carta é um cartão horizontal de 1160 × 820. Ela começa fechada dentro de um envelope verde com um carimbo de cera dourado; o carimbo é o único botão e, ao abrir, a folha sobe por trás dele e o envelope sai de cena. O envelope não conta como página e a carta não fecha de novo — para voltar ao envelope, recarregue o link sem hash (ou com `#/1`). Recarregar um link profundo `#/2` ou posterior reabre a carta naquela página. A troca de páginas é fade-out, respiro curto e fade-in apenas no conteúdo; a folha do cartão fica parada.
+
 ## URLs
 
 - Site: <https://renatopsilva.github.io/cartas-formatura/>
@@ -69,7 +71,7 @@ Não é preciso instalar nada. O servidor local evita restrições de `file://`,
 │   ├── fonts/                  # Fraunces + IBM Plex Sans WOFF2 + OFL
 │   └── img/
 │       ├── og/cartoes-de-gratidao.png
-│       ├── marca/
+│       ├── marca/               # selo.svg, favicon.svg, selo-cera.webp/png, selos/
 │       └── professores/
 ├── vendor/
 │   ├── reveal/                 # reveal.js + reveal.css + LICENSE
@@ -81,10 +83,10 @@ Não é preciso instalar nada. O servidor local evita restrições de `file://`,
 
 1. Abra o editor em `/editor/` (local ou na URL publicada).
 2. Escolha o cartão na lista lateral.
-3. Edite a capa: slug, nome, disciplina, selo, acento e retrato.
+3. Edite o envelope: slug, nome, disciplina, selo, acento e, se quiser, retrato. A disciplina continua nos metadados e no modo de leitura, mas não aparece na frente. Os três selos ficam fixos no canto inferior direito; o retrato, quando existe, aparece no canto superior direito.
 4. Edite as páginas internas. É possível adicionar, remover, duplicar e reordenar blocos de **texto**, **foto**, **recados**, **citação** e **assinatura**.
 5. Envie imagens pelo próprio editor. Ele redimensiona o maior lado para no máximo 1600 px, tenta converter para WebP e usa JPEG como fallback. Dimensões e peso final aparecem no campo.
-6. Use a prévia e o tema claro/escuro para conferir.
+6. Use a prévia e o tema claro/escuro para conferir. A prévia reproduz o cartão 1160 × 820; os rótulos mostram “Capa” (o envelope) e depois as páginas 1..N, sem contar o envelope.
 7. Clique em **Baixar ZIP**.
 8. Extraia o ZIP na raiz do repositório, substituindo os arquivos existentes.
 9. Confira, faça commit e envie:
@@ -103,7 +105,7 @@ O GitHub Pages publica a branch `main` automaticamente. Pode levar alguns minuto
 - **Rascunho textual:** `localStorage`, chave `cg-editor-draft-v1`.
 - **Imagens enviadas:** IndexedDB do navegador, banco `cartoes-gratidao-editor`.
 - **Nada é enviado a um servidor.** O editor não tem login, banco ou token.
-- O ZIP contém `dados.js`, as imagens referenciadas em `assets/img/professores/...` e um `LEIA-ME.txt` com o passo a passo.
+- O ZIP contém `dados.js`, as imagens referenciadas em `assets/img/professores/...` e um `LEIA-ME.txt` com o passo a passo. O carimbo de cera (`assets/img/marca/selo-cera.*`) e os três selos (`assets/img/marca/selos/`) são assets do site, não do ZIP.
 - Ao trocar de navegador ou limpar os dados do site, o rascunho local se perde. Exporte o ZIP com frequência.
 
 ### Importar um dados.js
@@ -137,12 +139,23 @@ window.DADOS = [
 
 Regras:
 
-- A capa é gerada automaticamente. Ela não é um bloco de `paginas`.
+- O envelope é gerado automaticamente. Ele não é um bloco de `paginas`.
+- O envelope é o estado fechado da página 1. O contador mostra apenas as páginas internas: no piloto, `1 / 5`, não `1 / 6`.
+- O carimbo de cera é o único botão. A página 1 começa atrás do envelope, em `scale(.83)`; a folha sobe por trás do carimbo, o envelope desliza para fora, a página 1 cresce até o palco e recebe o foco quando a abertura termina.
 - `acento` aceita `seal`, `azul`, `verde`, `ameixa` ou `ocre`.
-- Se `retrato` estiver vazio ou falhar, aparece o monograma com `selo` (ou iniciais do nome).
+- Se `retrato` estiver vazio ou falhar, o envelope fica sem retrato; os três selos no canto inferior direito continuam. As fotos da carta ficam nas páginas de `foto`.
 - Se não houver página de assinatura, o renderer adiciona uma assinatura padrão no fim.
 - **Caminhos de imagem são relativos à raiz do site** (`assets/img/...`). O renderer da carta, que fica em `carta/<slug>/`, prefixa `../../` automaticamente. O editor usa `../` para a prévia. O ZIP mantém os caminhos da raiz.
-- Os textos de página devem caber no cartão. O editor avisa acima de ~600 caracteres; no celular, prefira páginas menores ou use **Ler a carta inteira**.
+- Os textos de página devem caber no cartão. No desktop, o limite confortável é de ~600 caracteres; no celular, de ~350–400. O editor avisa acima de ~400 para o celular e acima de ~600 no geral. No celular, prefira páginas menores ou use **Ler a carta inteira**.
+
+### Abertura, contador e links profundos
+
+- Sem hash ou com `#/1`, a carta abre fechada no envelope.
+- `#/2` em diante abre direto na página pedida, com o envelope considerado aberto. Exemplo: `#/2` mostra a primeira página interna.
+- Voltar para `#/1` depois de aberta mostra a página 1 aberta, não o envelope.
+- O contador fica fora do cartão e só aparece depois da abertura. As setas ficam dentro do cartão, no canto inferior direito; a indisponível fica desabilitada.
+- A troca de páginas é sequencial: 260 ms de fade-out, 40 ms de respiro e 260 ms de fade-in apenas no conteúdo. A folha do cartão fica parada; o contador acompanha, e o conteúdo antigo some antes do novo entrar.
+- A numeração nova não preserva hashes antigos (`#/2` antigo apontava para outra página). O site é novo; compartilhe os links atuais.
 
 ## Como adicionar um novo professor
 
@@ -230,7 +243,7 @@ Se quiser manter uma cópia local para a equipe, guarde fora do repositório pub
 - O editor não tem autenticação, banco, login ou token. Quem souber a URL pode abrir, mas só altera o próprio navegador.
 - Imagens antigas que não são mais referenciadas continuam no repositório até serem removidas manualmente.
 - O `noindex` reduz a descoberta por buscadores, mas não torna os links secretos.
-- O texto do cartão é dimensionado para caber no formato retrato. Textos longos devem ir para o modo de leitura ou ser divididos em mais páginas.
+- O texto do cartão é dimensionado para caber no formato horizontal. Textos longos devem ir para o modo de leitura ou ser divididos em mais páginas; no celular, o cartão horizontal é pequeno por natureza e o modo de leitura é o caminho confortável.
 - O GitHub Pages pode demorar alguns minutos para atualizar após o push.
 
 ## Licenças

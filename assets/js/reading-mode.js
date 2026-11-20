@@ -246,7 +246,12 @@
   function abrir() {
     if (!dialogo) return;
     if (!dialogo.open) {
-      if (window.Reveal && window.Reveal.getConfig) {
+      if (
+        window.Cartao &&
+        typeof window.Cartao.pausarNavegacao === "function"
+      ) {
+        window.Cartao.pausarNavegacao();
+      } else if (window.Reveal && window.Reveal.getConfig) {
         if (window.Reveal.isOverview && window.Reveal.isOverview()) {
           window.Reveal.toggleOverview(false);
         }
@@ -254,11 +259,12 @@
           keyboard: window.Reveal.getConfig().keyboard,
           touch: window.Reveal.getConfig().touch,
         };
-        /* O teclado e o swipe passam a pertencer ao artigo, não ao deck. */
+        /* O teclado e o swipe passam a pertencer ao artigo. O hash é ignorado
+           pelo listener do renderer enquanto o diálogo está aberto. */
         window.Reveal.configure({ keyboard: false, touch: false });
       }
-      dialogo.showModal();
       document.body.classList.add("leitura-aberta");
+      dialogo.showModal();
       var rolagem = dialogo.querySelector(".reading-scroll");
       if (rolagem) rolagem.scrollTop = 0;
       var fechar = dialogo.querySelector("[data-close-reading]");
@@ -276,6 +282,14 @@
   }
 
   function restaurarDeck() {
+    if (
+      window.Cartao &&
+      typeof window.Cartao.retomarNavegacao === "function"
+    ) {
+      window.Cartao.retomarNavegacao();
+      revealConfigAnterior = null;
+      return;
+    }
     if (window.Reveal && window.Reveal.configure && revealConfigAnterior) {
       window.Reveal.configure(revealConfigAnterior);
       revealConfigAnterior = null;

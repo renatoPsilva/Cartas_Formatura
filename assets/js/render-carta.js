@@ -1,15 +1,57 @@
 /* ==========================================================================
    Renderer dos cartões
-   Monta capa + um slide por bloco, inicializa o Reveal e publica o evento
-   "cartao:pronto" para o modo de leitura.
+   Monta a primeira página com o envelope por cima (o cartão fechado), as
+   demais páginas e o Reveal. O envelope sai pelo selo; a navegação só é
+   liberada depois da abertura. Publica "cartao:pronto" para o modo de leitura.
    ========================================================================== */
 (function () {
   "use strict";
 
   var ACENTOS = ["seal", "azul", "verde", "ameixa", "ocre"];
+  var TIPOS_PAGINA = ["texto", "foto", "recados", "citacao", "assinatura"];
+  var DURACAO_PRESS = 120;
+  var DURACAO_ABERTURA = 1000;
+  var DURACAO_TROCA_SAIDA = 260;
+  var DURACAO_TROCA_PAUSA = 40;
+  var DURACAO_TROCA_ENTRADA = 260;
+  var ASSET_SELO_WEBP = "../../assets/img/marca/selo-cera.webp";
+  var ASSET_SELO_PNG = "../../assets/img/marca/selo-cera.png";
+  var SELOS_ENVELOPE = [
+    {
+      webp: "../../assets/img/marca/selos/selo-01.webp",
+      png: "../../assets/img/marca/selos/selo-01.png",
+      largura: 180,
+      altura: 180,
+    },
+    {
+      webp: "../../assets/img/marca/selos/selo-02.webp",
+      png: "../../assets/img/marca/selos/selo-02.png",
+      largura: 155,
+      altura: 180,
+    },
+    {
+      webp: "../../assets/img/marca/selos/selo-03.webp",
+      png: "../../assets/img/marca/selos/selo-03.png",
+      largura: 180,
+      altura: 166,
+    },
+  ];
   var app = document.querySelector(".app");
   var elementoErro = document.querySelector("[data-erro]");
   var elementoErroTexto = document.querySelector("[data-erro-texto]");
+
+  var totalPaginas = 0;
+  var primeiroSlide = null;
+  var nomeProfessor = "";
+  var rotuloPrimeiraPagina = "";
+  var estadoInterno = {
+    abrindo: false,
+    pausada: false,
+    trocando: false,
+    programatica: false,
+    temporizadorPress: 0,
+    temporizadorAbertura: 0,
+  };
 
   function esc(valor) {
     return String(valor == null ? "" : valor).replace(/[&<>"']/g, function (c) {
@@ -90,59 +132,87 @@
     );
   }
 
-  function retratoHtml(professor) {
-    var src = String(professor.retrato || "").trim();
-    var alt = String(professor.retratoAlt || "").trim();
-    if (!alt) alt = "Retrato de " + (professor.nome || "professor");
+  function selosHtml() {
     return (
-      '<div class="retrato" data-retrato>' +
-      '<div class="monograma" aria-hidden="true">' +
-      '<span class="monograma__iniciais">' +
-      esc(iniciaisDe(professor)) +
-      "</span>" +
-      '<span class="monograma__label">ALPHA EDTECH</span>' +
-      "</div>" +
-      (src
-        ? '<img src="' +
-          esc(urlImagem(src)) +
-          '" alt="' +
-          esc(alt) +
-          '" loading="eager" decoding="async">'
-        : "") +
+      '<div class="envelope__selos" aria-hidden="true">' +
+      SELOS_ENVELOPE.map(function (selo) {
+        return (
+          '<picture class="envelope__selo">' +
+          '<source srcset="' +
+          selo.webp +
+          '" type="image/webp">' +
+          '<img src="' +
+          selo.png +
+          '" alt="" width="' +
+          selo.largura +
+          '" height="' +
+          selo.altura +
+          '" loading="eager" decoding="async" data-envelope-selo>' +
+          "</picture>"
+        );
+      }).join("") +
       "</div>"
     );
   }
 
-  function capaHtml(professor) {
+  function retratoHtml(professor) {
+    var src = String(professor.retrato || "").trim();
+    if (!src) return "";
+    var alt = String(professor.retratoAlt || "").trim();
+    if (!alt) alt = "Retrato de " + (professor.nome || "professor");
     return (
-      '<section class="slide slide--capa" data-titulo="Capa" aria-label="Capa da carta para ' +
-      esc(professor.nome) +
-      '" tabindex="-1">' +
-      '<div class="card card--capa">' +
-      '<header class="card__top"><span>Cartões de Gratidão</span><span>Alpha EdTech · 2026</span></header>' +
-      '<div class="capa__main">' +
-      '<div class="capa__identity">' +
-      '<div class="capa__rule" aria-hidden="true"></div>' +
-      '<p class="capa__para">Para</p>' +
-      '<h1 class="capa__nome">' +
-      esc(professor.nome) +
-      "</h1>" +
-      '<p class="capa__disciplina">' +
-      esc(professor.disciplina || "Professor(a) da Alpha EdTech") +
-      "</p>" +
+      '<header class="envelope__top">' +
+      '<div class="retrato" data-retrato>' +
+      '<img src="' +
+      esc(urlImagem(src)) +
+      '" alt="' +
+      esc(alt) +
+      '" loading="eager" decoding="async" data-retrato-img>' +
       "</div>" +
-      retratoHtml(professor) +
-      "</div>" +
-      '<div class="capa__open">' +
-      '<button class="seal-button" type="button" data-open-card aria-label="Abrir a carta de ' +
-      esc(professor.nome) +
-      '">' +
+      "</header>"
+    );
+  }
+
+  function sealHtml(professor) {
+    return (
+      '<span class="seal-button__media">' +
+      '<picture class="seal-wax">' +
+      '<source srcset="' +
+      ASSET_SELO_WEBP +
+      '" type="image/webp">' +
+      '<img src="' +
+      ASSET_SELO_PNG +
+      '" alt="" width="480" height="465" loading="eager" decoding="async" data-seal-img>' +
+      "</picture>" +
+      '<span class="seal-fallback" aria-hidden="true">' +
       svgSelo(professor) +
-      "</button>" +
-      '<div class="capa__open-copy"><p>Abra o cartão</p><span>Toque no selo ou use as setas do teclado para entrar.</span></div>' +
+      "</span>" +
+      "</span>"
+    );
+  }
+
+  function envelopeHtml(professor) {
+    var nome = professor.nome || "professor";
+    return (
+      '<div class="envelope" data-envelope>' +
+      '<div class="envelope__body">' +
+      retratoHtml(professor) +
+      '<div class="envelope__address">' +
+      '<p class="envelope__para">Para</p>' +
+      '<h1 class="envelope__nome">' +
+      esc(nome) +
+      "</h1>" +
+      '<span class="envelope__rule" aria-hidden="true"></span>' +
       "</div>" +
-      '<footer class="card__bottom"><span>Uma carta da turma</span><span>Alpha EdTech</span></footer>' +
-      "</div></section>"
+      selosHtml() +
+      "</div>" +
+      '<button class="seal-button" type="button" data-open-card aria-label="Abrir a carta de ' +
+      esc(nome) +
+      '">' +
+      sealHtml(professor) +
+      "</button>" +
+      '<p class="envelope__hint">Toque no selo para abrir.</p>' +
+      "</div>"
     );
   }
 
@@ -162,17 +232,11 @@
     }
     return (
       '<div class="card card--page"><div class="page-text' +
-      (total > 560 ? " page-text--long" : "") +
+      (total > 400 ? " page-text--long" : "") +
       '">' +
       (pagina.titulo ? "<h2>" + esc(pagina.titulo) + "</h2>" : "") +
       corpo +
       "</div></div>"
-    );
-  }
-
-  function fotoFallbackHtml() {
-    return (
-      '<div class="photo__fallback"><div><span aria-hidden="true">□</span>Imagem ainda não adicionada.<br>Substitua no editor.</div></div>'
     );
   }
 
@@ -306,6 +370,17 @@
     );
   }
 
+  function paginaHtml(pagina, professor) {
+    if (!pagina || !pagina.tipo) return "";
+    if (pagina.tipo === "texto") return textoHtml(pagina);
+    if (pagina.tipo === "foto") return fotoHtml(pagina);
+    if (pagina.tipo === "recados") return recadosHtml(pagina);
+    if (pagina.tipo === "citacao") return citacaoHtml(pagina);
+    if (pagina.tipo === "assinatura")
+      return assinaturaHtml(pagina, professor, false);
+    return "";
+  }
+
   function rotuloPagina(pagina, indice) {
     var tipo = pagina && pagina.tipo;
     var titulo = pagina && pagina.titulo;
@@ -317,18 +392,71 @@
     return "Página " + indice;
   }
 
-  function criarSlide(html, rotulo, indice) {
-    var wrapper = document.createElement("div");
-    wrapper.innerHTML = html;
-    var slide = wrapper.firstElementChild;
-    if (!slide.classList.contains("slide")) {
-      var secao = document.createElement("section");
-      secao.className = "slide";
-      secao.appendChild(slide);
-      slide = secao;
+  function paginasEfetivas(professor) {
+    var lista = (Array.isArray(professor.paginas) ? professor.paginas : [])
+      .filter(function (pagina) {
+        return pagina && TIPOS_PAGINA.indexOf(pagina.tipo) >= 0;
+      })
+      .slice();
+    var temAssinatura = lista.some(function (pagina) {
+      return pagina && pagina.tipo === "assinatura";
+    });
+    if (!temAssinatura) {
+      lista.push({
+        tipo: "assinatura",
+        texto: "Com carinho, Turma Alpha EdTech",
+        ano: "2026",
+      });
     }
+    return lista;
+  }
+
+  function navHtml(indice, total) {
+    var prevDesabilitado = indice <= 1;
+    var nextDesabilitado = indice >= total;
+    return (
+      '<div class="carta-nav" role="group" aria-label="Navegação da carta">' +
+      '<button class="carta-nav__button" type="button" data-carta-nav="prev" aria-label="Página anterior"' +
+      (prevDesabilitado ? " disabled" : "") +
+      ">" +
+      '<svg class="carta-nav__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"></path></svg>' +
+      "</button>" +
+      '<button class="carta-nav__button" type="button" data-carta-nav="next" aria-label="Próxima página"' +
+      (nextDesabilitado ? " disabled" : "") +
+      ">" +
+      '<svg class="carta-nav__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"></path></svg>' +
+      "</button>" +
+      "</div>"
+    );
+  }
+
+  function criarPaginaComNav(html, rotulo, indice, total) {
+    var slide = document.createElement("section");
+    slide.className = "slide slide--pagina";
+    slide.innerHTML = html;
+    var card = slide.querySelector(".card");
+    if (card) card.insertAdjacentHTML("beforeend", navHtml(indice, total));
     slide.setAttribute("data-titulo", rotulo);
-    slide.setAttribute("aria-label", "Página " + indice + ": " + rotulo);
+    slide.setAttribute(
+      "aria-label",
+      "Página " + indice + " de " + total + ": " + rotulo
+    );
+    slide.setAttribute("tabindex", "-1");
+    return slide;
+  }
+
+  function criarPrimeiroSlide(pagina, professor, rotulo) {
+    var slide = document.createElement("section");
+    slide.className = "slide slide--abertura";
+    slide.innerHTML =
+      paginaHtml(pagina, professor) +
+      '<div class="abertura__cena">' +
+      envelopeHtml(professor) +
+      "</div>";
+    var card = slide.querySelector(".card");
+    if (card) card.insertAdjacentHTML("beforeend", navHtml(1, totalPaginas));
+    slide.setAttribute("data-titulo", rotulo);
+    slide.setAttribute("aria-label", "Capa da carta para " + nomeProfessor);
     slide.setAttribute("tabindex", "-1");
     return slide;
   }
@@ -341,13 +469,15 @@
   }
 
   function ligarImagens() {
-    var retratos = document.querySelectorAll(".retrato img");
+    var retratos = document.querySelectorAll("[data-retrato-img]");
     Array.prototype.forEach.call(retratos, function (img) {
       function carregou() {
         var caixa = img.closest(".retrato");
         if (caixa) caixa.classList.add("has-image");
       }
       function falhou() {
+        var caixa = img.closest(".retrato");
+        if (caixa) caixa.hidden = true;
         if (img.parentNode) img.parentNode.removeChild(img);
       }
       if (img.complete && img.naturalWidth > 0) carregou();
@@ -364,6 +494,278 @@
       }
       if (img.complete && img.naturalWidth === 0) falhou();
       img.addEventListener("error", falhou);
+    });
+
+    var selos = document.querySelectorAll("[data-seal-img]");
+    Array.prototype.forEach.call(selos, function (img) {
+      function falhou() {
+        var botao = img.closest(".seal-button");
+        if (botao) botao.classList.add("is-fallback");
+      }
+      if (img.complete && img.naturalWidth === 0) falhou();
+      img.addEventListener("error", falhou);
+    });
+
+    var selosEnvelope = document.querySelectorAll("[data-envelope-selo]");
+    Array.prototype.forEach.call(selosEnvelope, function (img) {
+      function falhou() {
+        var marca = img.closest(".envelope__selo");
+        if (marca) marca.hidden = true;
+      }
+      if (img.complete && img.naturalWidth === 0) falhou();
+      img.addEventListener("error", falhou);
+    });
+  }
+
+  function atualizarHash() {
+    if (!app || app.dataset.carta !== "aberta") return;
+    var hash = "#/" + (window.Reveal.getIndices().h + 1);
+    if (window.location.hash === hash) return;
+    try {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + hash
+      );
+    } catch (erro) {
+      /* O endereço pode ser bloqueado em alguns contextos. */
+    }
+  }
+
+  function atualizarIndicador() {
+    var atual = document.querySelector("[data-page-current]");
+    var total = document.querySelector("[data-page-total]");
+    if (atual) atual.textContent = String(window.Reveal.getIndices().h + 1);
+    if (total) total.textContent = String(totalPaginas);
+    atualizarHash();
+  }
+
+  function rotuloPrimeiraPaginaAberta() {
+    return (
+      "Página 1 de " +
+      totalPaginas +
+      ": " +
+      rotuloPrimeiraPagina
+    );
+  }
+
+  function prepararCapaFechada() {
+    if (!primeiroSlide || !app) return;
+    app.dataset.carta = "fechada";
+    primeiroSlide.setAttribute("aria-label", "Capa da carta para " + nomeProfessor);
+    var pagina = primeiroSlide.querySelector(".card");
+    if (pagina) {
+      pagina.setAttribute("inert", "");
+      pagina.setAttribute("aria-hidden", "true");
+    }
+    var envelope = primeiroSlide.querySelector("[data-envelope]");
+    if (envelope) {
+      envelope.removeAttribute("inert");
+      envelope.removeAttribute("aria-hidden");
+    }
+  }
+
+  function finalizarAbertura(opcoes) {
+    var op = opcoes || {};
+    if (!primeiroSlide || !app) return;
+    window.clearTimeout(estadoInterno.temporizadorAbertura);
+    window.clearTimeout(estadoInterno.temporizadorPress);
+    estadoInterno.abrindo = false;
+    app.dataset.carta = "aberta";
+
+    var envelope = primeiroSlide.querySelector("[data-envelope]");
+    if (envelope) {
+      envelope.setAttribute("inert", "");
+      envelope.setAttribute("aria-hidden", "true");
+    }
+    var pagina = primeiroSlide.querySelector(".card");
+    if (pagina) {
+      pagina.removeAttribute("inert");
+      pagina.removeAttribute("aria-hidden");
+    }
+    primeiroSlide.setAttribute("aria-label", rotuloPrimeiraPaginaAberta());
+    atualizarIndicador();
+    liberarNavegacao();
+
+    if (
+      !op.semFoco &&
+      !document.body.classList.contains("leitura-aberta")
+    ) {
+      window.requestAnimationFrame(function () {
+        primeiroSlide.focus({ preventScroll: true });
+      });
+    }
+  }
+
+  function liberarNavegacao() {
+    if (!window.Reveal || !window.Reveal.configure) return;
+    if (document.body.classList.contains("leitura-aberta")) {
+      estadoInterno.pausada = true;
+      return;
+    }
+    var aberta = app && app.dataset.carta === "aberta";
+    if (!aberta || estadoInterno.pausada) return;
+    window.Reveal.configure({ keyboard: true, touch: true });
+  }
+
+  /* O Reveal só liga/desliga o listener de hash no initialize; por isso a
+     navegação por hash é controlada aqui, com a flag de pausa do modo leitura. */
+  function alvoDoHash(valor) {
+    var encontrado = /^#\/(\d+)/.exec(String(valor || ""));
+    if (!encontrado) return 0;
+    var alvo = parseInt(encontrado[1], 10);
+    if (!isFinite(alvo) || alvo < 1 || alvo > totalPaginas) return 0;
+    return alvo;
+  }
+
+  function irParaSlideDireto(indice) {
+    var slides = document.querySelector(".reveal .slides");
+    if (slides) slides.classList.add("disable-slide-transitions");
+    window.Reveal.slide(indice, 0, 0);
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        if (slides) slides.classList.remove("disable-slide-transitions");
+      });
+    });
+  }
+
+  function aoMudarHash() {
+    if (!app || !window.Reveal) return;
+    if (estadoInterno.pausada) return;
+    if (document.body.classList.contains("leitura-aberta")) return;
+    var alvo = alvoDoHash(window.location.hash);
+    if (!alvo) return;
+
+    if (alvo === 1) {
+      if (app.dataset.carta === "aberta" && window.Reveal.getIndices().h !== 0) {
+        window.Reveal.slide(0);
+      }
+      return;
+    }
+
+    if (app.dataset.carta === "aberta") {
+      if (window.Reveal.getIndices().h !== alvo - 1) {
+        window.Reveal.slide(alvo - 1);
+      }
+      return;
+    }
+
+    if (app.dataset.carta === "fechada") {
+      irParaSlideDireto(alvo - 1);
+      finalizarAbertura({ semFoco: true });
+    }
+  }
+
+  function antesDeTrocarPagina(evento) {
+    if (!app || app.dataset.carta !== "aberta") return;
+    if (estadoInterno.pausada) return;
+    if (document.body.classList.contains("leitura-aberta")) return;
+    if (!evento || typeof evento.indexh !== "number") return;
+    if (reduzirMovimento()) return;
+
+    if (estadoInterno.programatica) {
+      estadoInterno.programatica = false;
+      return;
+    }
+
+    if (estadoInterno.trocando) {
+      evento.preventDefault();
+      return;
+    }
+
+    var atual = window.Reveal.getCurrentSlide();
+    var destino = window.Reveal.getSlide(evento.indexh, evento.indexv);
+    if (!atual || !destino || destino === atual) return;
+
+    evento.preventDefault();
+    estadoInterno.trocando = true;
+    app.classList.add("is-trocando-pagina", "transicao-pagina");
+    atual.classList.add("slide-saindo");
+
+    window.setTimeout(function () {
+      estadoInterno.programatica = true;
+      window.Reveal.slide(evento.indexh, evento.indexv);
+      atual.classList.remove("slide-saindo");
+      window.setTimeout(function () {
+        estadoInterno.programatica = false;
+      }, 0);
+      app.classList.remove("is-trocando-pagina");
+      window.setTimeout(function () {
+        app.classList.remove("transicao-pagina");
+        estadoInterno.trocando = false;
+      }, DURACAO_TROCA_ENTRADA);
+    }, DURACAO_TROCA_SAIDA + DURACAO_TROCA_PAUSA);
+  }
+
+  function reduzirMovimento() {
+    return !!(
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function abrirCarta() {
+    if (!primeiroSlide || !app) return;
+    if (app.dataset.carta !== "fechada" || estadoInterno.abrindo) return;
+
+    if (reduzirMovimento()) {
+      app.dataset.carta = "aberta";
+      finalizarAbertura({ semFoco: false });
+      return;
+    }
+
+    estadoInterno.abrindo = true;
+    var botao = primeiroSlide.querySelector("[data-open-card]");
+    if (botao) botao.classList.add("is-pressed");
+
+    estadoInterno.temporizadorPress = window.setTimeout(function () {
+      if (!estadoInterno.abrindo) return;
+      app.dataset.carta = "abrindo";
+      var envelope = primeiroSlide.querySelector("[data-envelope]");
+      if (envelope) {
+        envelope.setAttribute("inert", "");
+        envelope.setAttribute("aria-hidden", "true");
+      }
+      estadoInterno.temporizadorAbertura = window.setTimeout(
+        finalizarAbertura,
+        DURACAO_ABERTURA
+      );
+    }, DURACAO_PRESS);
+  }
+
+  function pausarNavegacao() {
+    estadoInterno.pausada = true;
+    if (window.Reveal && window.Reveal.configure) {
+      window.Reveal.configure({ keyboard: false, touch: false });
+    }
+  }
+
+  function retomarNavegacao() {
+    estadoInterno.pausada = false;
+    if (!window.Reveal || !window.Reveal.configure) return;
+    liberarNavegacao();
+  }
+
+  function ligarBotoesCarta() {
+    var botao = primeiroSlide
+      ? primeiroSlide.querySelector("[data-open-card]")
+      : null;
+    if (botao) {
+      botao.addEventListener("click", abrirCarta);
+    }
+
+    document.addEventListener("click", function (evento) {
+      var controle = evento.target.closest
+        ? evento.target.closest("[data-carta-nav]")
+        : null;
+      if (!controle || !app || app.dataset.carta !== "aberta") return;
+      if (controle.disabled) return;
+      evento.preventDefault();
+      if (controle.getAttribute("data-carta-nav") === "prev") {
+        window.Reveal.prev();
+      } else {
+        window.Reveal.next();
+      }
     });
   }
 
@@ -394,8 +796,10 @@
 
     var acento = ACENTOS.indexOf(professor.acento) >= 0 ? professor.acento : "seal";
     document.body.setAttribute("data-acento", acento);
+    nomeProfessor = professor.nome || "professor";
 
-    var paginas = Array.isArray(professor.paginas) ? professor.paginas : [];
+    var paginas = paginasEfetivas(professor);
+    totalPaginas = paginas.length;
     var slidesEl = document.querySelector(".reveal .slides");
     if (!slidesEl) {
       mostrarErro("Não foi possível montar a carta. Recarregue a página.");
@@ -403,34 +807,23 @@
     }
 
     slidesEl.innerHTML = "";
-    slidesEl.appendChild(criarSlide(capaHtml(professor), "Capa", 1));
+    rotuloPrimeiraPagina = rotuloPagina(paginas[0], 1);
+    primeiroSlide = criarPrimeiroSlide(
+      paginas[0],
+      professor,
+      rotuloPrimeiraPagina
+    );
+    slidesEl.appendChild(primeiroSlide);
 
-    paginas.forEach(function (pagina, indice) {
-      if (!pagina || !pagina.tipo) return;
-      var rotulo = rotuloPagina(pagina, indice + 2);
-      var html = "";
-      if (pagina.tipo === "texto") html = textoHtml(pagina);
-      else if (pagina.tipo === "foto") html = fotoHtml(pagina);
-      else if (pagina.tipo === "recados") html = recadosHtml(pagina);
-      else if (pagina.tipo === "citacao") html = citacaoHtml(pagina);
-      else if (pagina.tipo === "assinatura")
-        html = assinaturaHtml(pagina, professor, false);
-      if (html) {
-        slidesEl.appendChild(
-          criarSlide(html, rotulo, slidesEl.children.length + 1)
-        );
-      }
-    });
-
-    var temAssinatura = paginas.some(function (pagina) {
-      return pagina && pagina.tipo === "assinatura";
-    });
-    if (!temAssinatura) {
+    for (var indice = 1; indice < paginas.length; indice += 1) {
+      var pagina = paginas[indice];
+      var rotulo = rotuloPagina(pagina, indice + 1);
       slidesEl.appendChild(
-        criarSlide(
-          assinaturaHtml(null, professor, true),
-          "Assinatura",
-          slidesEl.children.length + 1
+        criarPaginaComNav(
+          paginaHtml(pagina, professor),
+          rotulo,
+          indice + 1,
+          totalPaginas
         )
       );
     }
@@ -444,21 +837,35 @@
       return;
     }
 
+    /* Guardamos o hash e o retiramos antes do initialize: o Reveal interpreta
+       o hash por conta própria mesmo com respondToHashChanges: false. A leitura
+       e a validação do link profundo são feitas abaixo, depois do ready. */
+    var hashInicial = window.location.hash;
+    if (hashInicial) {
+      try {
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search
+        );
+      } catch (erro) {
+        /* Se o navegador bloquear, o Reveal ainda pode ler o hash. */
+      }
+    }
+
     window.Reveal.initialize({
-      width: 820,
-      height: 1160,
+      width: 1160,
+      height: 820,
       margin: 0.02,
       minScale: 0.2,
       maxScale: 1.5,
-      center: false,
-      controls: true,
-      controlsLayout: "bottom-right",
-      controlsBackArrows: "visible",
-      controlsTutorial: false,
-      progress: true,
-      keyboard: true,
-      touch: true,
-      hash: true,
+      center: true,
+      controls: false,
+      progress: false,
+      keyboard: false,
+      touch: false,
+      hash: false,
+      hashOneBasedIndex: true,
       history: false,
       transition: "fade",
       transitionSpeed: "slow",
@@ -471,11 +878,24 @@
       help: false,
       pause: true,
       scrollActivationWidth: 0,
-      respondToHashChanges: true,
+      respondToHashChanges: false,
     }).then(function () {
+      atualizarIndicador();
+      ligarBotoesCarta();
+      window.Reveal.on("slidechanged", atualizarIndicador);
+      window.Reveal.on("beforeslidechange", antesDeTrocarPagina);
+
+      var alvoInicial = alvoDoHash(hashInicial);
+      if (alvoInicial > 1) {
+        irParaSlideDireto(alvoInicial - 1);
+        finalizarAbertura({ semFoco: true });
+      } else {
+        prepararCapaFechada();
+      }
+
+      window.addEventListener("hashchange", aoMudarHash);
+
       if (app) app.dataset.estado = "pronto";
-      ligarIndicador();
-      ligarAbertura();
 
       window.Cartao = {
         professor: professor,
@@ -484,11 +904,16 @@
         svgSelo: svgSelo,
         urlImagem: urlImagem,
         esc: esc,
+        pausarNavegacao: pausarNavegacao,
+        retomarNavegacao: retomarNavegacao,
+        estaAberta: function () {
+          return !!app && app.dataset.carta === "aberta";
+        },
       };
 
       document.dispatchEvent(
         new CustomEvent("cartao:pronto", {
-          detail: { professor: professor, paginas: paginas },
+          detail: { professor: professor, paginas: professor.paginas },
         })
       );
     }).catch(function (erro) {
@@ -496,34 +921,6 @@
         "Não foi possível abrir o cartão neste navegador. Recarregue a página ou tente outro navegador."
       );
       if (window.console && console.error) console.error(erro);
-    });
-  }
-
-  function ligarIndicador() {
-    var atual = document.querySelector("[data-page-current]");
-    var total = document.querySelector("[data-page-total]");
-    function atualizar() {
-      var indices = window.Reveal.getIndices();
-      if (atual) atual.textContent = String(indices.h + 1);
-      if (total) total.textContent = String(window.Reveal.getTotalSlides());
-    }
-    atualizar();
-    window.Reveal.on("slidechanged", atualizar);
-    window.Reveal.on("ready", atualizar);
-  }
-
-  function ligarAbertura() {
-    var botao = document.querySelector("[data-open-card]");
-    if (!botao) return;
-    botao.addEventListener("click", function () {
-      window.Reveal.next();
-      window.setTimeout(function () {
-        var slide = window.Reveal.getCurrentSlide();
-        if (slide) {
-          slide.setAttribute("tabindex", "-1");
-          slide.focus({ preventScroll: true });
-        }
-      }, 80);
     });
   }
 

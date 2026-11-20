@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Tema do baralho — o cartão é uma folha, não um slide corporativo
+   Tema do baralho — o cartão é uma folha horizontal, não um slide corporativo
+   Desenho de referência: 1160 × 820. O Reveal escala o conjunto.
    ========================================================================== */
 
 .reveal-viewport {
@@ -39,11 +40,12 @@
    Folha
    -------------------------------------------------------------------------- */
 .slide {
+  position: relative;
   display: flex;
   align-items: stretch;
   justify-content: center;
-  width: 820px;
-  height: 1160px;
+  width: 1160px;
+  height: 820px;
 }
 
 .card {
@@ -56,7 +58,8 @@
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--card);
-  box-shadow: 0 1px 2px rgb(27 42 46 / 8%), 0 26px 70px -22px rgb(27 42 46 / 42%);
+  box-shadow: 0 1px 2px rgb(27 42 46 / 8%),
+    0 26px 70px -22px rgb(27 42 46 / 42%);
   color: var(--ink);
 }
 
@@ -82,7 +85,10 @@
 
 html[data-theme="dark"] .card::before {
   opacity: 0.34;
-  background-image: radial-gradient(rgb(242 236 225 / 3.2%) 0.55px, transparent 0.55px),
+  background-image: radial-gradient(
+      rgb(242 236 225 / 3.2%) 0.55px,
+      transparent 0.55px
+    ),
     repeating-linear-gradient(
       91deg,
       rgb(242 236 225 / 1.2%) 0 1px,
@@ -104,96 +110,17 @@ html[data-theme="dark"] .card::after {
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 4%);
 }
 
-/* --------------------------------------------------------------------------
-   Capa
-   -------------------------------------------------------------------------- */
-.card--capa {
-  padding: 62px 68px 46px;
-}
-
-.card__top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 17px;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.035em;
-}
-
-.card__top span:last-child {
-  text-align: right;
-}
-
-.capa__main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 274px;
-  align-items: center;
-  gap: 42px;
-  flex: 1 1 auto;
-  padding: 26px 0 18px;
-}
-
-.capa__identity {
-  min-width: 0;
-  padding-top: 10px;
-}
-
-.capa__rule {
-  width: 58px;
-  height: 2px;
-  margin-bottom: 30px;
-  background: var(--accent);
-}
-
-.capa__para {
-  margin-bottom: 14px;
-  color: var(--muted);
-  font-family: var(--font-display);
-  font-size: 27px;
-  font-style: normal;
-  font-weight: 320;
-  font-variation-settings: "opsz" 24, "SOFT" 60, "WONK" 0;
-}
-
-.capa__nome {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 74px;
-  font-weight: 330;
-  line-height: 0.98;
-  letter-spacing: -0.038em;
-  color: var(--ink);
-  text-wrap: balance;
-  overflow-wrap: anywhere;
-  font-variation-settings: "opsz" 96, "SOFT" 35, "WONK" 0;
-}
-
-.capa__disciplina {
-  max-width: 26ch;
-  margin-top: 22px;
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-/* Retrato ou monograma */
+/* Retrato opcional ou conjunto de selos */
 .retrato {
   position: relative;
-  width: 274px;
-  height: 352px;
+  width: 302px;
+  height: 402px;
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--accent-wash);
 }
 
-.retrato img {
+.retrato > img {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -203,143 +130,268 @@ html[data-theme="dark"] .card::after {
   filter: saturate(0.9) contrast(0.98);
 }
 
-.retrato .monograma {
+.envelope__selos {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  flex: 0 0 auto;
+  padding-top: 18px;
+}
+
+.envelope__selo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.envelope__selo[hidden] {
+  display: none;
+}
+
+.envelope__selo img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 52px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Envelope — o estado fechado da página 1
+   -------------------------------------------------------------------------- */
+.envelope {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  z-index: 3;
+  width: 1080px;
+  height: 690px;
+  transform: translateX(-50%);
+  transition: transform 750ms var(--ease-out),
+    opacity 180ms var(--ease-out) 450ms;
+  will-change: transform, opacity;
+}
+
+.envelope__body {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 48px 60px 34px;
+  border: 1px solid var(--envelope-line);
+  border-top-width: 2px;
+  border-top-color: color-mix(in srgb, var(--envelope-ink) 26%, transparent);
+  border-radius: 2px;
+  background: linear-gradient(
+    158deg,
+    color-mix(in srgb, var(--envelope) 90%, #fff 10%) 0%,
+    var(--envelope) 38%,
+    var(--envelope-deep) 100%
+  );
+  color: var(--envelope-ink);
+}
+
+.envelope__body::before {
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  background-image: radial-gradient(
+      rgb(242 236 225 / 3.2%) 0.6px,
+      transparent 0.6px
+    ),
+    repeating-linear-gradient(
+      92deg,
+      rgb(242 236 225 / 1.3%) 0 1px,
+      transparent 1px 5px
+    );
+  background-size: 4px 4px, 100% 100%;
+  mix-blend-mode: screen;
+}
+
+.envelope__body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(242 236 225 / 9%);
+}
+
+.envelope__top {
+  position: relative;
+  z-index: 1;
   display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.envelope .retrato {
+  width: 120px;
+  height: 150px;
+  flex: 0 0 auto;
+  border-color: var(--envelope-line);
+  background: color-mix(in srgb, var(--envelope-ink) 6%, transparent);
+}
+
+.envelope .retrato:not(.has-image) {
+  border-color: transparent;
+  background: transparent;
+}
+
+.envelope .retrato > img {
+  filter: saturate(0.85) contrast(0.96) brightness(1.02);
+}
+
+.envelope__address {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  padding: 20px;
-  color: var(--accent);
+  min-height: 0;
+  padding: 0 80px 8px;
   text-align: center;
 }
 
-.retrato .monograma::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 1px solid currentColor;
-  opacity: 0.28;
-}
-
-.retrato .monograma::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -25%;
-  width: 150%;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.18;
-  transform: rotate(-31deg);
-}
-
-.retrato .monograma__iniciais {
-  position: relative;
-  z-index: 1;
+.envelope__para {
+  margin-bottom: 12px;
+  color: var(--envelope-muted);
   font-family: var(--font-display);
-  font-size: 126px;
-  font-weight: 340;
-  line-height: 0.85;
-  letter-spacing: -0.05em;
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+  font-size: 24px;
+  font-weight: 320;
+  line-height: 1;
+  font-variation-settings: "opsz" 24, "SOFT" 60, "WONK" 0;
 }
 
-.retrato .monograma__label {
-  position: relative;
-  z-index: 1;
+.envelope__nome {
+  max-width: 100%;
+  margin: 0;
+  color: var(--envelope-ink);
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 330;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  font-variation-settings: "opsz" 84, "SOFT" 35, "WONK" 0;
+}
+
+.envelope__rule {
+  width: 54px;
+  height: 2px;
+  margin-top: 26px;
+  background: var(--accent-envelope);
+}
+
+.envelope__hint {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  margin: 0;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  transform: translateX(-50%);
 }
 
-.retrato.has-image .monograma {
-  visibility: hidden;
-}
-
-/* Abertura pelo selo */
-.capa__open {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-  padding: 6px 0 30px;
-}
-
+/* O carimbo fica no meio da borda de cima, metade para fora do envelope. */
 .seal-button {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 4;
   display: block;
-  width: 172px;
-  height: 172px;
-  flex: 0 0 172px;
-  padding: 8px;
+  width: 150px;
+  height: 150px;
+  padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--accent);
   cursor: pointer;
-  transition: background-color var(--speed-base) var(--ease-out),
-    transform var(--speed-base) var(--ease-out);
+  transform: translate(-50%, -50%);
+  transition: transform 160ms var(--ease-out);
+  will-change: transform;
 }
 
 .seal-button:hover {
-  background: var(--accent-wash);
-  transform: scale(1.015);
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
-.seal-button:active {
-  transform: scale(0.985);
+.seal-button:active,
+.seal-button.is-pressed {
+  transform: translate(-50%, -50%) scale(0.97);
 }
 
-.seal-button svg {
+.seal-button:focus-visible {
+  outline: 2px solid var(--envelope-ink);
+  outline-offset: 4px;
+}
+
+.seal-button__media {
+  display: block;
   width: 100%;
   height: 100%;
 }
 
-.capa__open-copy {
-  max-width: 28ch;
-}
-
-.capa__open-copy p {
-  margin-bottom: 6px;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 1.15;
-  font-variation-settings: "opsz" 28, "SOFT" 50, "WONK" 0;
-}
-
-.capa__open-copy span {
+.seal-wax {
   display: block;
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  line-height: 1.5;
+  width: 100%;
+  height: 100%;
 }
 
-.card__bottom {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.03em;
+.seal-wax img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.seal-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--envelope-line);
+  border-radius: 50%;
+  background: var(--envelope-deep);
+  color: var(--envelope-ink);
+}
+
+.seal-button.is-fallback .seal-wax {
+  display: none;
+}
+
+.seal-button.is-fallback .seal-fallback {
+  display: block;
+}
+
+.seal-fallback svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* --------------------------------------------------------------------------
    Páginas internas
    -------------------------------------------------------------------------- */
 .card--page {
-  padding: 104px 88px 84px;
+  padding: 92px 96px 94px;
 }
 
 .page-text {
@@ -351,7 +403,7 @@ html[data-theme="dark"] .card::after {
 }
 
 .page-text h2 {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   color: var(--ink);
   font-family: var(--font-display);
   font-size: 42px;
@@ -365,9 +417,9 @@ html[data-theme="dark"] .card::after {
 .page-text p {
   color: var(--ink-soft);
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 330;
-  line-height: 1.62;
+  line-height: 1.58;
   font-variation-settings: "opsz" 22, "SOFT" 50, "WONK" 0;
   text-wrap: pretty;
 }
@@ -390,16 +442,17 @@ html[data-theme="dark"] .card::after {
 }
 
 .page-text--long p {
-  font-size: 26px;
+  font-size: 27px;
 }
 
 /* Foto */
 .card--foto {
-  padding: 88px 76px 70px;
+  padding: 70px 72px 80px;
 }
 
 .page-head {
-  margin-bottom: 34px;
+  flex: 0 0 auto;
+  margin-bottom: 26px;
 }
 
 .page-head h2 {
@@ -430,7 +483,7 @@ html[data-theme="dark"] .card::after {
 
 .photo-grid--3 {
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1.2fr 0.8fr;
+  grid-template-rows: 1.16fr 0.84fr;
 }
 
 .photo-grid--3 .photo:first-child {
@@ -492,31 +545,36 @@ html[data-theme="dark"] .card::after {
   padding-top: 10px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.45;
-}
-
-.photo-grid--3 .photo:first-child .photo__frame {
-  min-height: 0;
 }
 
 /* Recados */
 .card--recados {
-  padding: 88px 76px 70px;
+  padding: 66px 74px 80px;
+  justify-content: center;
+}
+
+.card--recados .page-head {
+  margin-bottom: 26px;
+}
+
+.card--recados .recados-list {
+  flex: 0 1 auto;
 }
 
 .recados-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 38px;
+  gap: 0 46px;
   align-content: center;
   flex: 1 1 auto;
-  list-style: none;
   min-height: 0;
+  list-style: none;
 }
 
 .recados-list li {
-  padding: 26px 0;
+  padding: 24px 0;
   border-top: 1px solid var(--line);
   break-inside: avoid;
 }
@@ -530,13 +588,13 @@ html[data-theme="dark"] .card::after {
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 330;
-  line-height: 1.5;
+  line-height: 1.45;
   font-variation-settings: "opsz" 20, "SOFT" 55, "WONK" 0;
 }
 
 .recados-list cite {
   display: block;
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--muted);
   font-family: var(--font-ui);
   font-size: 13px;
@@ -547,7 +605,7 @@ html[data-theme="dark"] .card::after {
 
 /* Citação */
 .card--citacao {
-  padding: 120px 96px 100px;
+  padding: 96px 110px 106px;
   justify-content: center;
 }
 
@@ -559,9 +617,9 @@ html[data-theme="dark"] .card::after {
 .card--citacao blockquote p {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 42px;
+  font-size: 44px;
   font-weight: 320;
-  line-height: 1.34;
+  line-height: 1.3;
   letter-spacing: -0.015em;
   font-variation-settings: "opsz" 42, "SOFT" 40, "WONK" 0;
   text-wrap: pretty;
@@ -569,16 +627,16 @@ html[data-theme="dark"] .card::after {
 
 .card--citacao cite {
   display: block;
-  margin-top: 32px;
+  margin-top: 30px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 16px;
   font-style: normal;
 }
 
 /* Assinatura */
 .card--assinatura {
-  padding: 100px 88px 84px;
+  padding: 82px 100px 92px;
   justify-content: center;
   text-align: center;
 }
@@ -589,14 +647,14 @@ html[data-theme="dark"] .card::after {
   align-items: center;
   justify-content: center;
   flex: 1 1 auto;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .assinatura__content p {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: var(--muted);
   font-family: var(--font-display);
-  font-size: 31px;
+  font-size: 30px;
   font-weight: 330;
   line-height: 1.3;
   font-variation-settings: "opsz" 30, "SOFT" 55, "WONK" 0;
@@ -604,18 +662,18 @@ html[data-theme="dark"] .card::after {
 
 .assinatura__content strong {
   display: block;
-  max-width: 22ch;
+  max-width: 26ch;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 50px;
+  font-size: 52px;
   font-weight: 350;
-  line-height: 1.1;
+  line-height: 1.08;
   letter-spacing: -0.03em;
   font-variation-settings: "opsz" 60, "SOFT" 35, "WONK" 0;
 }
 
 .assinatura__content .assinatura__ano {
-  margin-top: 22px;
+  margin-top: 18px;
   color: var(--muted);
   font-family: var(--font-ui);
   font-size: 15px;
@@ -624,187 +682,390 @@ html[data-theme="dark"] .card::after {
 }
 
 .assinatura__seal {
-  width: 104px;
-  margin-top: 40px;
+  width: 96px;
+  margin-top: 30px;
   color: var(--accent);
 }
 
 /* --------------------------------------------------------------------------
-   Controles do Reveal — fora do cartão
+   Setas dentro do cartão — sem círculos, área de toque ampliada no mobile
    -------------------------------------------------------------------------- */
-.reveal .controls {
-  position: fixed;
-  right: 12px;
-  bottom: 10px;
-  color: var(--muted);
-  font-size: 10px;
-}
-
-.reveal .controls button {
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--card) 68%, transparent);
-  transition: background-color var(--speed-fast) var(--ease-out),
-    border-color var(--speed-fast) var(--ease-out), opacity var(--speed-fast)
-      var(--ease-out);
-}
-
-.reveal .controls button:hover {
-  border-color: var(--accent);
-  background: var(--card);
-}
-
-.reveal .controls .controls-arrow {
+.carta-nav {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: none;
+  right: 30px;
+  bottom: 18px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-.reveal .controls .controls-arrow::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 9px;
-  height: 9px;
-  border-top: 1.5px solid currentColor;
-  border-right: 1.5px solid currentColor;
-  background: transparent;
+.carta-nav__button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
   border-radius: 0;
-  transform: translate(-60%, -50%) rotate(45deg);
-  transition: transform var(--speed-fast) var(--ease-out);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--speed-fast) var(--ease-out),
+    opacity var(--speed-fast) var(--ease-out);
 }
 
-.reveal .controls .controls-arrow::after {
-  display: none;
+.carta-nav__button:hover:not(:disabled) {
+  color: var(--ink);
 }
 
-.reveal .controls .navigate-right .controls-arrow {
-  transform: none;
-}
-
-.reveal .controls .navigate-left .controls-arrow::before {
-  transform: translate(-40%, -50%) rotate(-135deg);
-}
-
-.reveal .controls .navigate-up,
-.reveal .controls .navigate-down {
-  display: none;
-}
-
-.reveal:not(.has-vertical-slides) .controls .navigate-left {
-  right: 66px;
-  bottom: 0;
-}
-
-.reveal:not(.has-vertical-slides) .controls .navigate-right {
-  right: 12px;
-  bottom: 0;
-}
-
-.reveal .controls .enabled {
-  opacity: 1;
-  visibility: visible;
-}
-
-.reveal .controls button:disabled {
-  opacity: 0.28;
-  visibility: visible;
+.carta-nav__button:disabled {
+  opacity: 0.26;
   cursor: default;
 }
 
-.reveal .controls button:disabled .controls-arrow::before {
-  opacity: 0.7;
-}
-
-.reveal .progress {
-  height: 2px;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
+.carta-nav__icon {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* --------------------------------------------------------------------------
-   Ajustes de viewport — o cartão é escalado pelo Reveal; aumentamos o corpo
-   no celular para manter a leitura confortável (o modo leitura é o fallback).
+   Abertura do envelope sobre a página 1
+   -------------------------------------------------------------------------- */
+.reveal .slides > section.slide--abertura {
+  perspective: none;
+}
+
+/* O envelope pode sair do palco sem aparecer no fundo do deck. */
+.abertura__cena {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.abertura__cena .seal-button {
+  pointer-events: auto;
+}
+
+/* A folha começa menor, dentro do envelope, e sobe até o palco inteiro. */
+.slide--abertura > .card {
+  transform-origin: 50% 0;
+  transform: translateY(80px) scale(0.83);
+  transition: transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.app[data-carta="abrindo"] .slide--abertura > .card {
+  transform: translateY(0) scale(0.83);
+}
+
+.app[data-carta="aberta"] .slide--abertura > .card {
+  transform: translateY(0) scale(1);
+  transition-duration: 380ms;
+}
+
+/* O conteúdo da folha só aparece depois que o envelope saiu, para não
+   misturar o texto da página com o texto do envelope no fade. */
+.slide--abertura > .card > *:not(.carta-nav) {
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out);
+}
+
+.app[data-carta="abrindo"] .slide--abertura > .card > *:not(.carta-nav) {
+  opacity: 1;
+  transition-delay: 450ms;
+}
+
+.app[data-carta="aberta"] .slide--abertura > .card > *:not(.carta-nav) {
+  opacity: 1;
+  transition-delay: 0ms;
+}
+
+.app[data-carta="fechada"] .slide--abertura .carta-nav,
+.app[data-carta="abrindo"] .slide--abertura .carta-nav {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.app[data-carta="abrindo"] .envelope {
+  transform: translate(-50%, 830px);
+  opacity: 0;
+}
+
+.app[data-carta="aberta"] .envelope {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 830px);
+}
+
+/* --------------------------------------------------------------------------
+   Fade sequencial entre páginas — a folha fica parada; só o conteúdo entra
+   e sai. O conteúdo antigo some antes do novo aparecer.
+   -------------------------------------------------------------------------- */
+.app[data-carta="aberta"] .reveal .slides > section {
+  transition: none;
+}
+
+.app[data-carta="aberta"] .reveal .slides > section .card > *:not(.carta-nav) {
+  transition: opacity 260ms linear;
+}
+
+.app[data-carta="aberta"] .reveal .slides > section:not(.present) .card > *:not(.carta-nav) {
+  opacity: 0;
+}
+
+.app[data-carta="aberta"] .reveal .slides > section.present .card > *:not(.carta-nav) {
+  opacity: 1;
+}
+
+.reveal .slides > section.slide-saindo .card > *:not(.carta-nav) {
+  opacity: 0 !important;
+  transition: opacity 260ms linear !important;
+}
+
+/* Mantém as páginas vizinhas renderizadas para o conteúdo poder entrar em fade. */
+.app[data-carta="aberta"] .reveal .slides > section.past[hidden],
+.app[data-carta="aberta"] .reveal .slides > section.future[hidden] {
+  display: block !important;
+}
+
+.app[data-carta="aberta"].transicao-pagina .deck-status {
+  transition-delay: 0s;
+}
+
+.app.is-trocando-pagina .deck-status {
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   Ajustes de viewport — o cartão mantém 1160 × 820; aumentamos a tipografia
+   no celular para compensar a escala do Reveal. O modo leitura é o fallback.
    -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
-  .card--capa {
-    padding: 48px 52px 36px;
+  .envelope__nome {
+    font-size: 96px;
   }
 
-  .card__top {
-    font-size: 16px;
+  .envelope__para {
+    font-size: 32px;
   }
 
-  .capa__main {
-    grid-template-columns: minmax(0, 1fr) 250px;
-    gap: 30px;
+  .envelope__hint {
+    font-size: 22px;
   }
 
-  .capa__nome {
-    font-size: 80px;
+  .envelope .retrato {
+    width: 150px;
+    height: 188px;
   }
 
-  .capa__disciplina {
-    font-size: 25px;
+  .envelope__selos {
+    gap: 22px;
+    padding-top: 22px;
   }
 
-  .retrato {
-    width: 250px;
-    height: 322px;
+  .envelope__selo img {
+    max-height: 64px;
   }
 
-  .seal-button {
-    width: 158px;
-    height: 158px;
-    flex-basis: 158px;
+  .envelope__address {
+    padding: 0 52px 8px;
   }
 
-  .capa__open-copy p {
-    font-size: 28px;
-  }
-
-  .capa__open-copy span {
-    font-size: 16px;
-  }
-
-  .card__bottom {
-    font-size: 15px;
+  .envelope__rule {
+    width: 66px;
   }
 
   .card--page {
-    padding: 82px 66px 70px;
+    padding: 70px 74px 118px;
   }
 
   .page-text h2 {
-    margin-bottom: 26px;
+    margin-bottom: 24px;
     font-size: 48px;
   }
 
   .page-text p {
-    font-size: 38px;
-    line-height: 1.55;
+    font-size: 36px;
+    line-height: 1.5;
   }
 
   .page-text--long p {
-    font-size: 34px;
+    font-size: 32px;
   }
 
   .card--foto,
   .card--recados {
-    padding: 74px 58px 58px;
+    padding: 62px 58px 118px;
   }
 
   .page-head h2 {
-    font-size: 46px;
+    font-size: 44px;
   }
 
   .photo figcaption {
-    font-size: 26px;
+    font-size: 22px;
+  }
+
+  .photo__fallback {
+    font-size: 22px;
+  }
+
+  .recados-list {
+    gap: 0 32px;
+  }
+
+  .recados-list li {
+    padding: 18px 0;
+  }
+
+  .recados-list blockquote {
+    font-size: 28px;
+  }
+
+  .recados-list cite {
+    margin-top: 8px;
+    font-size: 17px;
+  }
+
+  .card--citacao {
+    padding: 86px 72px 118px;
+  }
+
+  .card--citacao blockquote p {
+    font-size: 48px;
+  }
+
+  .card--citacao cite {
+    font-size: 22px;
+  }
+
+  .card--assinatura {
+    padding: 78px 80px 118px;
+  }
+
+  .assinatura__content p {
+    font-size: 36px;
+  }
+
+  .assinatura__content strong {
+    font-size: 56px;
+  }
+
+  .assinatura__content .assinatura__ano {
+    font-size: 19px;
+  }
+
+  .assinatura__seal {
+    width: 110px;
+  }
+
+  .carta-nav {
+    right: 22px;
+    bottom: 10px;
+  }
+
+  .carta-nav__button {
+    width: 96px;
+    height: 96px;
+  }
+
+  .carta-nav__icon {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 520px) {
+  .envelope__nome {
+    font-size: 108px;
+  }
+
+  .envelope__para {
+    font-size: 36px;
+  }
+
+  .envelope__hint {
+    font-size: 24px;
+  }
+
+  .envelope .retrato {
+    width: 168px;
+    height: 210px;
+  }
+
+  .envelope__selos {
+    gap: 26px;
+    padding-top: 24px;
+  }
+
+  .envelope__selo img {
+    max-height: 74px;
+  }
+
+  .envelope__address {
+    padding: 0 34px 4px;
+  }
+
+  .envelope__rule {
+    width: 74px;
+  }
+
+  .card--page {
+    padding: 48px 54px 160px;
+  }
+
+  .page-text h2 {
+    margin-bottom: 20px;
+    font-size: 52px;
+  }
+
+  .page-text p {
+    font-size: 43px;
+    line-height: 1.46;
+  }
+
+  .page-text p + p {
+    margin-top: 0.8em;
+  }
+
+  .page-text--long {
+    padding-bottom: 14px;
+  }
+
+  .page-text--long p {
+    font-size: 34px;
+    line-height: 1.44;
+  }
+
+  .card--foto {
+    padding: 52px 46px 176px;
+  }
+
+  .card--recados {
+    padding: 52px 46px 180px;
+  }
+
+  .page-head h2 {
+    font-size: 50px;
+  }
+
+  .photo-grid {
+    gap: 16px;
+  }
+
+  .photo figcaption {
+    font-size: 24px;
   }
 
   .photo__fallback {
@@ -812,128 +1073,95 @@ html[data-theme="dark"] .card::after {
   }
 
   .recados-list {
-    grid-template-columns: 1fr;
-    gap: 0;
-    align-content: center;
+    gap: 0 26px;
   }
 
   .recados-list li {
-    padding: 18px 0;
-  }
-
-  .recados-list li:nth-child(2) {
-    border-top: 1px solid var(--line);
+    padding: 14px 0;
   }
 
   .recados-list blockquote {
-    font-size: 33px;
-    line-height: 1.45;
+    font-size: 38px;
+    line-height: 1.4;
   }
 
   .recados-list cite {
-    margin-top: 8px;
-    font-size: 19px;
+    margin-top: 7px;
+    font-size: 24px;
   }
 
   .card--citacao {
-    padding: 110px 70px 90px;
+    padding: 78px 58px 142px;
+  }
+
+  .card--citacao blockquote {
+    padding-left: 26px;
   }
 
   .card--citacao blockquote p {
-    font-size: 50px;
+    font-size: 56px;
   }
 
   .card--citacao cite {
-    font-size: 23px;
+    font-size: 24px;
+  }
+
+  .card--assinatura {
+    padding: 70px 60px 142px;
   }
 
   .assinatura__content p {
-    font-size: 38px;
+    font-size: 42px;
   }
 
   .assinatura__content strong {
-    font-size: 58px;
+    font-size: 68px;
   }
 
   .assinatura__content .assinatura__ano {
-    font-size: 20px;
+    font-size: 21px;
   }
 
   .assinatura__seal {
     width: 118px;
   }
 
-  .reveal .controls button {
-    width: 40px;
-    height: 40px;
+  .carta-nav {
+    right: 12px;
+    bottom: 4px;
   }
 
-  .reveal .controls .navigate-left {
-    right: 56px;
+  .carta-nav__button {
+    width: 140px;
+    height: 140px;
   }
 
-  .reveal .controls .navigate-right {
-    right: 6px;
-  }
-}
-
-/* Em celulares muito estreitos, o retrato vira uma faixa menor para o nome
-   respirar; o monograma continua legível. */
-@media (max-width: 430px) {
-  .capa__main {
-    grid-template-columns: minmax(0, 1fr);
-    align-content: center;
-    gap: 30px;
-  }
-
-  .retrato {
-    width: 180px;
-    height: 220px;
-    order: -1;
-  }
-
-  .retrato .monograma__iniciais {
-    font-size: 90px;
-  }
-
-  .capa__nome {
-    font-size: 74px;
-  }
-
-  .capa__open {
-    gap: 18px;
-  }
-
-  .seal-button {
-    width: 142px;
-    height: 142px;
-    flex-basis: 142px;
-  }
-}
-
-@media (min-width: 500px) and (max-width: 1000px) and (orientation: portrait) {
-  .reveal:not(.has-vertical-slides) .controls .navigate-left {
-    right: 0;
-    bottom: 54px;
-  }
-
-  .reveal:not(.has-vertical-slides) .controls .navigate-right {
-    right: 0;
-    bottom: 0;
+  .carta-nav__icon {
+    width: 44px;
+    height: 44px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .seal-button:hover {
-    transform: none;
+  .seal-button:hover,
+  .seal-button.is-pressed {
+    transform: translate(-50%, -50%);
   }
 
-  .reveal .fade .slides section,
-  .reveal .slides section {
+  .envelope,
+  .slide--abertura > .card,
+  .slide--abertura > .card > *:not(.carta-nav) {
     transition: none !important;
   }
 
-  .reveal .progress span {
+  .reveal .slides > section,
+  .reveal .slides > section > section,
+  .app[data-carta="aberta"] .reveal .slides > section .card > *:not(.carta-nav),
+  .reveal .slides > section.slide-saindo .card > *:not(.carta-nav) {
+    transition: none !important;
+  }
+
+  .app.is-trocando-pagina .deck-status {
     transition: none;
   }
 }

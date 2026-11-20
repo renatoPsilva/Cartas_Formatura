@@ -12,9 +12,32 @@
   var DB_STORE = "imagens";
   var ACENTOS = ["seal", "azul", "verde", "ameixa", "ocre"];
   var LIMITE_TEXTO = 600;
+  var LIMITE_TEXTO_CELULAR = 400;
   var MAX_IMAGEM = 1600;
   var LIMITE_PESO = 500 * 1024;
   var MIN_LADO = 800;
+  var SELO_WEBP = "../assets/img/marca/selo-cera.webp";
+  var SELO_PNG = "../assets/img/marca/selo-cera.png";
+  var SELOS_ENVELOPE = [
+    {
+      webp: "../assets/img/marca/selos/selo-01.webp",
+      png: "../assets/img/marca/selos/selo-01.png",
+      largura: 180,
+      altura: 180,
+    },
+    {
+      webp: "../assets/img/marca/selos/selo-02.webp",
+      png: "../assets/img/marca/selos/selo-02.png",
+      largura: 155,
+      altura: 180,
+    },
+    {
+      webp: "../assets/img/marca/selos/selo-03.webp",
+      png: "../assets/img/marca/selos/selo-03.png",
+      largura: 180,
+      altura: 166,
+    },
+  ];
 
   var db = null;
   var imagens = new Map();
@@ -53,6 +76,15 @@
 
   function clone(valor) {
     return JSON.parse(JSON.stringify(valor));
+  }
+
+  function textoContagem(total) {
+    var rotulo = total + " caracteres";
+    if (total > LIMITE_TEXTO) return rotulo + " — acima do recomendado";
+    if (total > LIMITE_TEXTO_CELULAR) {
+      return rotulo + " — no celular, prefira até ~400";
+    }
+    return rotulo;
   }
 
   function formatarBytes(bytes) {
@@ -514,7 +546,7 @@
   function painelCapa(professor) {
     return (
       '<section class="panel">' +
-      '<div class="panel__head"><div><h2>Capa</h2><p>Estes dados geram a capa automaticamente. O acento aparece no selo e em uma linha fina; o corpo do texto continua neutro.</p></div></div>' +
+      '<div class="panel__head"><div><h2>Capa</h2><p>Estes dados geram o envelope automaticamente. O acento aparece no fio sob o nome; os três selos ocupam o canto inferior direito. O interior do cartão continua neutro.</p></div></div>' +
       '<div class="panel__body"><div class="field-grid">' +
       '<label class="field"><span>Slug (endereço)</span><input type="text" data-meta="slug" value="' +
       esc(professor.slug) +
@@ -526,10 +558,10 @@
       '"></label>' +
       '<label class="field"><span>Disciplina</span><input type="text" data-meta="disciplina" value="' +
       esc(professor.disciplina) +
-      '"></label>' +
+      '"><small>Aparece nos metadados e no modo de leitura; não entra no envelope.</small></label>' +
       '<label class="field"><span>Selo (até 3 caracteres)</span><input type="text" data-meta="selo" maxlength="3" value="' +
       esc(professor.selo) +
-      '" spellcheck="false"><small>Usado no monograma quando não há retrato.</small></label>' +
+      '" spellcheck="false"><small>Usado no carimbo de cera quando a imagem do selo falha.</small></label>' +
       '<label class="field"><span>Acento</span><select data-meta="acento">' +
       ["seal", "azul", "verde", "ameixa", "ocre"]
         .map(function (acento) {
@@ -560,7 +592,7 @@
     });
     return (
       '<section class="panel">' +
-      '<div class="panel__head"><div><h2>Retrato</h2><p>Opcional. Se ficar vazio ou a imagem falhar, a capa usa o monograma com as iniciais do selo.</p></div></div>' +
+      '<div class="panel__head"><div><h2>Retrato</h2><p>Opcional. O retrato aparece no canto superior direito do envelope. Os três selos ficam no canto inferior direito; as fotos da carta vão nas páginas do tipo Foto.</p></div></div>' +
       '<div class="panel__body">' +
       upload +
       '<div class="field-grid" style="margin-top:14px">' +
@@ -668,14 +700,12 @@
         indice +
         '" data-campo="paragrafos" rows="7" placeholder="Separe os parágrafos com uma linha em branco.">' +
         esc(texto) +
-        '</textarea><small>Separe parágrafos com uma linha em branco. O cartão fica melhor com até ~600 caracteres.</small><span class="char-count' +
+        '</textarea><small>Separe parágrafos com uma linha em branco. No desktop, o cartão fica melhor com até ~600 caracteres; no celular, até ~400. Textos maiores pedem “Ler a carta inteira”.</small><span class="char-count' +
         (contagem > LIMITE_TEXTO ? " is-over" : "") +
         '" data-contador="' +
         indice +
         '">' +
-        contagem +
-        " caracteres" +
-        (contagem > LIMITE_TEXTO ? " — acima do recomendado" : "") +
+        esc(textoContagem(contagem)) +
         "</span></label>"
       );
     }
@@ -1069,10 +1099,7 @@
       var contador = $('[data-contador="' + indice + '"]');
       if (contador) {
         var total = pagina.paragrafos.join(" ").length;
-        contador.textContent =
-          total +
-          " caracteres" +
-          (total > LIMITE_TEXTO ? " — acima do recomendado" : "");
+        contador.textContent = textoContagem(total);
         contador.classList.toggle("is-over", total > LIMITE_TEXTO);
       }
     } else {
@@ -1585,10 +1612,14 @@
         ano: "2026",
       });
     }
-    var total = lista.length + 1;
+    var total = lista.length;
     var itens = [];
     itens.push(
-      previewItem("Capa", 1, total, '<div class="card card--capa">' + previewCapa(professor) + "</div>")
+      previewItem(
+        "Capa",
+        "",
+        '<div class="card card--envelope">' + previewCapa(professor) + "</div>"
+      )
     );
     lista.forEach(function (pagina, indice) {
       var rotulo =
@@ -1615,8 +1646,7 @@
       itens.push(
         previewItem(
           rotulo,
-          indice + 2,
-          total,
+          indice + 1 + " / " + total,
           '<div class="' + classesCard + '">' + previewPagina(pagina) + "</div>"
         )
       );
@@ -1626,14 +1656,12 @@
     ligarFalhasImagensPreview();
   }
 
-  function previewItem(rotulo, numero, total, cardHtml) {
+  function previewItem(rotulo, contador, cardHtml) {
     return (
       '<div class="preview-item"><p class="preview-label"><span>' +
       esc(rotulo) +
       "</span><span>" +
-      numero +
-      " / " +
-      total +
+      esc(contador) +
       '</span></p><div class="preview-slide">' +
       cardHtml +
       "</div></div>"
@@ -1642,26 +1670,61 @@
 
   function previewCapa(professor) {
     var retrato = professor.retrato
-      ? '<img src="' +
+      ? '<header class="envelope__top">' +
+        '<div class="retrato has-image">' +
+        '<img src="' +
         esc(urlPreview(professor.retrato)) +
-        '" alt="" loading="lazy">'
+        '" alt="" loading="lazy" data-retrato-img>' +
+        "</div></header>"
       : "";
+    var selos = SELOS_ENVELOPE.map(function (selo) {
+      return (
+        '<picture class="envelope__selo">' +
+        '<source srcset="' +
+        selo.webp +
+        '" type="image/webp">' +
+        '<img src="' +
+        selo.png +
+        '" alt="" width="' +
+        selo.largura +
+        '" height="' +
+        selo.altura +
+        '" loading="lazy" data-envelope-selo>' +
+        "</picture>"
+      );
+    }).join("");
     return (
-      '<header class="card__top"><span>Cartões de Gratidão</span><span>Alpha EdTech · 2026</span></header>' +
-      '<div class="capa__main"><div class="capa__identity"><div class="capa__rule" aria-hidden="true"></div><p class="capa__para">Para</p><h1 class="capa__nome">' +
-      esc(professor.nome) +
-      '</h1><p class="capa__disciplina">' +
-      esc(professor.disciplina || "Professor(a) da Alpha EdTech") +
-      "</p></div>" +
-      '<div class="retrato"><div class="monograma"><span class="monograma__iniciais">' +
-      esc(iniciaisDe(professor)) +
-      '</span><span class="monograma__label">ALPHA EDTECH</span></div>' +
+      '<div class="envelope">' +
+      '<div class="envelope__body">' +
       retrato +
-      "</div></div>" +
-      '<div class="capa__open"><div class="seal-button" aria-hidden="true">' +
+      '<div class="envelope__address">' +
+      '<p class="envelope__para">Para</p>' +
+      '<h1 class="envelope__nome">' +
+      esc(professor.nome) +
+      "</h1>" +
+      '<span class="envelope__rule" aria-hidden="true"></span>' +
+      "</div>" +
+      '<div class="envelope__selos" aria-hidden="true">' +
+      selos +
+      "</div>" +
+      "</div>" +
+      '<div class="seal-button" aria-hidden="true">' +
+      '<span class="seal-button__media">' +
+      '<picture class="seal-wax">' +
+      '<source srcset="' +
+      SELO_WEBP +
+      '" type="image/webp">' +
+      '<img src="' +
+      SELO_PNG +
+      '" alt="" width="480" height="465" loading="lazy">' +
+      "</picture>" +
+      '<span class="seal-fallback">' +
       svgSelo(professor) +
-      '</div><div class="capa__open-copy"><p>Abra o cartão</p><span>Toque no selo ou use as setas do teclado para entrar.</span></div></div>' +
-      '<footer class="card__bottom"><span>Uma carta da turma</span><span>Alpha EdTech</span></footer>'
+      "</span>" +
+      "</span>" +
+      "</div>" +
+      '<p class="envelope__hint">Toque no selo para abrir.</p>' +
+      "</div>"
     );
   }
 
@@ -1677,7 +1740,7 @@
         .join("");
       return (
         '<div class="page-text' +
-        (String((pagina.paragrafos || []).join(" ")).length > 560
+        (String((pagina.paragrafos || []).join(" ")).length > 400
           ? " page-text--long"
           : "") +
         '">' +
@@ -1784,7 +1847,7 @@
     if (!slide) return;
     var largura = slide.getBoundingClientRect().width;
     if (!largura) return;
-    stage.style.setProperty("--preview-scale", String(largura / 820));
+    stage.style.setProperty("--preview-scale", String(largura / 1160));
   }
 
   function ligarFalhasImagensPreview() {
@@ -1793,8 +1856,17 @@
     $$("img", stage).forEach(function (img) {
       img.addEventListener("error", function () {
         img.style.display = "none";
+        if (img.matches("[data-envelope-selo]")) {
+          var marca = img.closest(".envelope__selo");
+          if (marca) marca.hidden = true;
+          return;
+        }
         var retrato = img.closest(".retrato");
         if (retrato) retrato.classList.remove("has-image");
+        var cabecalho = img.closest(".envelope__top");
+        if (cabecalho) cabecalho.hidden = true;
+        var selo = img.closest(".seal-button");
+        if (selo) selo.classList.add("is-fallback");
         var fallback = img.parentNode.querySelector(".photo__fallback");
         if (fallback) fallback.hidden = false;
       });
@@ -2026,6 +2098,9 @@
       "- O editor não publica sozinho; ele apenas exporta arquivos.\n" +
       "- Para um professor novo, crie carta/<slug>/index.html copiando um shell existente e ajuste data-professor e as meta tags.\n" +
       "- O editor deve ser removido ou bloqueado após a formatura.\n" +
+      "- O envelope é o estado fechado da página 1 e não conta no total de páginas; o carimbo de cera abre a carta.\n" +
+      "- O carimbo (assets/img/marca/selo-cera.*) e os três selos (assets/img/marca/selos/) são assets do site e não entram no ZIP.\n" +
+      "- Textos: no desktop, até ~600 caracteres; no celular, até ~400. Textos maiores pedem “Ler a carta inteira”.\n" +
       "- O site é noindex/nofollow e não aparece em buscadores; os links são privados por obscuridade, não por login.\n" +
       "- Imagens ausentes no ZIP continuam as que já estão no repositório.\n"
     );
