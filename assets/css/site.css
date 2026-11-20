@@ -379,17 +379,11 @@ html[data-theme="dark"] .paper-grain::after {
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(4px);
-  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out),
-    visibility 0s linear 220ms;
 }
 
 .app[data-carta="aberta"] .deck-status {
   opacity: 1;
   visibility: visible;
-  transform: none;
-  transition: opacity 220ms var(--ease-out) 120ms,
-    transform 220ms var(--ease-out) 120ms, visibility 0s linear 0s;
 }
 
 .deck-status [data-page-current] {
@@ -963,11 +957,6 @@ html[data-theme="dark"] .paper-grain::after {
   .app[data-estado="pronto"] .reveal,
   .reading-dialog[open] {
     animation: none;
-  }
-
-  .deck-status,
-  .app[data-carta="aberta"] .deck-status {
-    transition: none;
   }
 
   .deck-loading__dot {
